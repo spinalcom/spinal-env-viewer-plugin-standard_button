@@ -42,7 +42,7 @@ class SpinalContextIsolation extends SpinalContextApp {
 
   isShown(option) {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (true);
+      return (Promise.resolve(true));
 //    else
 //      return (-1);
   }
