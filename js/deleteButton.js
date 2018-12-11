@@ -25,7 +25,7 @@
 const {
 	SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinalgraph");
+const spinalgraph = require("spinal-model-graph");
 
 const {
   SpinalForgeExtention
