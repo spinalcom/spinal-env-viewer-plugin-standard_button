@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "spinal-env-viewer-context-geographic": "git+https://github.com/spinalcom/spinal-env-viewer-context-geographic.git",
-    "spinal-env-viewer-context-menu-service": "https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
-    "spinal-env-viewer-plugin-graph-manager": "https://github.com/spinalcom/spinal-env-viewer-plugin-graph-manager.git"
+    "spinal-env-viewer-context-menu-service": "https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git"
   },
   "keywords": [],
   "author": "",
