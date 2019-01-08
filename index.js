@@ -54,20 +54,19 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSel
 
 
 				/* 			Zoom Button  				*/
-  import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
+import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
 
-  spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
 
 
 // 				/* 			Isolation Button  			*/
- import { SpinalContextIsolation } from './js/isolationButton.js';
+import { SpinalContextIsolation } from './js/isolationButton.js';
 
- spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
-
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
 
 
 // 				/* 			Research Button				*/
- import { SpinalContexResearch } from './js/researchButton.js';
+import { SpinalContexResearch } from './js/researchButton.js';
 
- spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
 

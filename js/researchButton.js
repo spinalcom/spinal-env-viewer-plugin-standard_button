@@ -27,10 +27,6 @@ const {
 } = require("spinal-env-viewer-context-menu-service");
 
 const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
-
-const {
   spinalPanelManagerService
 } = require("spinal-env-viewer-panel-manager-service");
 

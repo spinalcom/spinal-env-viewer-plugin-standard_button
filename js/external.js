@@ -26,7 +26,6 @@
  function search_node(node, bool, name) {
 	let el = document.getElementsByClassName("node-name");
 	let ite = 0;
-	let arrName = []
 
 	while (el[ite]) {
 		if (el[ite].innerText === name) {

@@ -22,16 +22,11 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+import { search_node } from './external.js';
+
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
-
-import { search_node } from './external.js';
 
 class SpinalContextSortByName extends SpinalContextApp {
   constructor() {
@@ -42,7 +37,7 @@ class SpinalContextSortByName extends SpinalContextApp {
     this.sorted = false;
   }
 
-  isShown(option) {
+  isShown() {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
       return (Promise.resolve(true));
 //    else
