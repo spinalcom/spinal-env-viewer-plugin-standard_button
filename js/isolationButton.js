@@ -40,15 +40,33 @@ class SpinalContextIsolation extends SpinalContextApp {
     });
   }
 
-  isShown(option) {
+  isShown() {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
       return (Promise.resolve(true));
 //    else
 //      return (-1);
   }
 
-  action(option) {
-    console.log("clicked isolation");
+  action() {
+    this.viewer = window.spinal.ForgeViewer.viewer
+    let selection = this.viewer.getSelection();
+    let self = this;
+    this.viewer.clearSelection();
+    if (selection.length > 0) {
+      let dbIdsToChange = [];
+      selection.forEach(function (dbId) {
+          self.viewer.getProperties(dbId, function () {
+
+                  dbIdsToChange.push(dbId);
+                  if (dbIdsToChange.length > 0) {
+                      self.viewer.isolate(dbIdsToChange);
+                  }
+          })
+      })
+    }
+    else {
+        self.viewer.isolate(0);
+    }
   }
 }
 

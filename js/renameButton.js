@@ -25,55 +25,29 @@
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
 
 const {
   spinalPanelManagerService
 } = require("spinal-env-viewer-panel-manager-service");
 
-import renameComponent from '../vue/renamePanel.vue';
-import Vue from 'vue';
-
 
 class SpinalContextRename extends SpinalContextApp {
   constructor() {
-    super("Rename button", "rename button", {
+    super("Rename button", "rename", {
       icon: "text_format",
-      icon_type: "in"
+      icon_type: "in",
+      backgroundColor: "#FF0000",
+      fontColor: "#FFFFFF"
     });
   }
 
-  isShown(option) {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+  isShown() {
       return (Promise.resolve(true));
-//    else
-//      return (-1);
   }
 
   action(option) {
-    spinalPanelManagerService.openPanel("renamePanel", option);
+    spinalPanelManagerService.openPanel("standardButtonRename", option);
   }
 }
 
-const extentionRenamePanel = SpinalForgeExtention.createExtention({
-  name: "renamePanel",
-  vueMountComponent: Vue.extend(renameComponent),
-  // toolbar is optional
-  panel: {
-    title: "Rename SpinalNode",
-    classname: "spinal-pannel",
-    closeBehaviour: "hide"
-  },
-  style: {
-    left: "405px"
-  },
-  onload: () => {},
-  onUnLoad: () => {}
-});
-
-
-export { SpinalContextRename, extentionRenamePanel };
+export { SpinalContextRename };

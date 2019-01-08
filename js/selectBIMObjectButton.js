@@ -22,14 +22,11 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
 
 
 class SpinalContextSelectBIMObject extends SpinalContextApp {
@@ -40,7 +37,7 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
     });
   }
 
-  isShown(option) {
+  isShown() {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
       return (Promise.resolve(true));
 //    else
@@ -48,7 +45,15 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
   }
 
   action(option) {
-    console.log("clicked select bimobject");
+    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
+    this.viewer = window.spinal.ForgeViewer.viewer
+    let self = this;
+    realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
+      function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
+        self.viewer.clearSelection();
+        let result = lst.map(x => x.info.dbid.get());
+        self.viewer.select(result);
+      });
   }
 }
 

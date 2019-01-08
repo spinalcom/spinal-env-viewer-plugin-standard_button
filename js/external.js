@@ -24,81 +24,81 @@
 
 
  function search_node(node, bool, name) {
- 	let el = document.getElementsByClassName("node-name");
- 	let ite = 0;
- 	let arrName = []
+	let el = document.getElementsByClassName("node-name");
+	let ite = 0;
+	let arrName = []
 
- 	while (el[ite]) {
- 		if (el[ite].innerText === name) {
- 			sort_node(el[ite].parentElement.parentElement, bool);
- 			return;
- 		}
- 		ite++;
- 	}
+	while (el[ite]) {
+		if (el[ite].innerText === name) {
+			sort_node(el[ite].parentElement.parentElement, bool);
+			return;
+		}
+		ite++;
+	}
  }
 
  function sort_node(target, bool) {
- 	let list = target;
- 	let ite = 2;
- 	let count = 0;
- 	let tmp = '';
- 	let index = 0;
- 	let myNode = [];
- 	let arrName = [];
- 	let lastValue = '';
- 	let echange;
- 	target = target.childNodes;
+	let list = target;
+	let ite = 2;
+	let count = 0;
+	let tmp = '';
+	let index = 0;
+	let myNode = [];
+	let arrName = [];
+	let lastValue = '';
+	let echange;
+	target = target.childNodes;
 
- 	try {
+	try {
 
- 	while(target[ite]) {
- 		myNode.push(target[ite]);
- 		tmp = target[ite].innerText.replace(/\n[\w\W\d]*/gi, '');
- 		if (tmp == 'keyboard_arrow_right')
- 			tmp = target[ite].querySelectorAll("div")[2].innerText;
- 		arrName.push(tmp);
- 		ite++;
- 	}
- 	} catch(error) {
- 		return ;
- 	}
- 	ite = 2;
+		while(target[ite]) {
+			myNode.push(target[ite]);
+			tmp = target[ite].innerText.replace(/\n[\w\W\d]*/gi, '');
+			if (tmp == 'keyboard_arrow_right')
+				tmp = target[ite].querySelectorAll("div")[2].innerText;
+			arrName.push(tmp);
+			ite++;
+		}
+	} catch(error) {
+		return ;
+	}
+	ite = 2;
 
- 	while (arrName[ite - 2]) {
+	while (arrName[ite - 2]) {
 
- 		lastValue = arrName[ite - 2];
- 		while(arrName[count]) {
+		lastValue = arrName[ite - 2];
+		while(arrName[count]) {
 
- 			 if (bool) {
-      			if (lastValue < arrName[count]) {
-        		index = count;
-      		}
-    	} else {
-      		if (lastValue > arrName[count]) {
-       	 		index = count;
-      		}
-    	}
+			if (bool) {
+				if (lastValue < arrName[count]) {
+					index = count;
+				}
+			} else {
+				if (lastValue > arrName[count]) {
+					index = count;
+			}
+		}
 
- 			count++;
- 		}
+		count++;
+		}
 
- 		if (index != -1) {
- 			echange = arrName[ite - 2];
- 			arrName[ite - 2] = arrName[index];
- 			arrName[index] = echange;
+		if (index != -1) {
+			echange = arrName[ite - 2];
+			arrName[ite - 2] = arrName[index];
+			arrName[index] = echange;
 
- 			echange = myNode[ite - 2];
- 			myNode[ite-2] = myNode[index];
- 			myNode[index] = echange;
+			echange = myNode[ite - 2];
+			myNode[ite-2] = myNode[index];
+			myNode[index] = echange;
 
- 		}
+		}
 
- 		index = -1;
- 		ite++;
- 		count = (ite - 2);
- 	}
- 	for (var k in myNode)
- 		list.appendChild(myNode[k]);
+		index = -1;
+		ite++;
+		count = (ite - 2);
+	}
+	for (var k in myNode)
+		list.appendChild(myNode[k]);
  }
 
 function removeElement(node) {

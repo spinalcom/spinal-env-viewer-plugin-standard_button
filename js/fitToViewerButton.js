@@ -25,19 +25,6 @@
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
-
-const {
-  spinalPanelManagerService
-} = require("spinal-env-viewer-panel-manager-service");
-
-import fitComponent from '../vue/fitToViewerPanel.vue';
-import Vue from 'vue';
-
 
 class SpinalContextFitToViewer extends SpinalContextApp {
   constructor() {
@@ -47,33 +34,35 @@ class SpinalContextFitToViewer extends SpinalContextApp {
     });
   }
 
-  isShown(option) {
+  isShown() {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
       return (Promise.resolve(true));
 //    else
 //      return (-1);
   }
 
-  action(option) {
-    spinalPanelManagerService.openPanel("fitViewerPanel", option);
+  action() {
+    this.viewer = window.spinal.ForgeViewer.viewer
+    let selection = this.viewer.getSelection();
+    let self = this;
+    this.viewer.clearSelection();
+    if (selection.length > 0) {
+      let dbIdsToChange = [];
+      selection.forEach(function (dbId) {
+          self.viewer.getProperties(dbId, function () {
+
+                  dbIdsToChange.push(dbId);
+                  if (dbIdsToChange.length > 0) {
+                      self.viewer.fitToView(dbIdsToChange);
+                  }
+          })
+      })
+    }
+    else {
+        self.viewer.fitToView(0);
+    }
   }
 }
 
-const extentionFitPanel = SpinalForgeExtention.createExtention({
-  name: "fitViewerPanel",
-  vueMountComponent: Vue.extend(fitComponent),
-  // toolbar is optional
-  panel: {
-    title: "Fit a SpinalNode",
-    classname: "spinal-pannel",
-    closeBehaviour: "hide"
-  },
-  style: {
-    left: "405px"
-  },
-  onload: () => {},
-  onUnLoad: () => {}
-});
 
-
-export { SpinalContextFitToViewer, extentionFitPanel };
+export { SpinalContextFitToViewer };

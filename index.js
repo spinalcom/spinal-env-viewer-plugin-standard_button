@@ -22,49 +22,23 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+import "./registerDialogs";
+
 const {
 	spinalContextMenuService
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
-
 
 
 				/* 			Delete Button  				*/
-import { SpinalContextDelete, extentionDeletePanel } from './js/deleteButton.js';
+import { SpinalContextDelete } from './js/deleteButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete());
-SpinalForgeExtention.registerExtention("deletePanel", extentionDeletePanel);
 
 
 				/* 			Rename Button  				*/
-import { SpinalContextRename, extentionRenamePanel } from './js/renameButton.js';
+import { SpinalContextRename } from './js/renameButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename());
-SpinalForgeExtention.registerExtention("renamePanel", extentionRenamePanel);
-
-
-				/* 			Zoom Button  				*/
-import { SpinalContextFitToViewer, extentionFitPanel } from './js/fitToViewerButton.js';
-
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
-SpinalForgeExtention.registerExtention("fitPanel", extentionFitPanel);
-
-
-				/* 			Isolation Button  			*/
-import { SpinalContextIsolation } from './js/isolationButton.js';
-
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
-
-
-				/* 			Research Button				*/
-import { SpinalContexResearch, extentionResearchPanel } from './js/researchButton.js';
-
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
-SpinalForgeExtention.registerExtention("searchPanel", extentionResearchPanel);
 
 
 				/* 			SortChild Button			*/
@@ -77,3 +51,30 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSor
 import { SpinalContextSelectBIMObject } from './js/selectBIMObjectButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject());
+
+
+				/* 			Zoom Button  				*/
+  import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
+
+  spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
+
+
+// 				/* 			Isolation Button  			*/
+ import { SpinalContextIsolation } from './js/isolationButton.js';
+
+ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
+
+
+
+
+
+
+
+
+
+// 				/* 			Research Button				*/
+// import { SpinalContexResearch, extentionResearchPanel } from './js/researchButton.js';
+
+// spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
+// SpinalForgeExtention.registerExtention("searchPanel", extentionResearchPanel);
+

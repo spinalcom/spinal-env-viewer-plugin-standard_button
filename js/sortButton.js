@@ -50,7 +50,7 @@ class SpinalContextSortByName extends SpinalContextApp {
   }
 
   action(option) {
-    search_node(option.selectedNode, this.sorted, option.selectedNode.info.name.get());
+    search_node(option.selectedNode, this.sorted, option.selectedNode.name.get());
     this.sorted = !this.sorted;
   }
 }

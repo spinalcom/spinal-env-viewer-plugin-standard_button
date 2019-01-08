@@ -21,62 +21,31 @@
  * with this file. If not, see
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
- 
+
 const {
 	SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
-
-const {
-  SpinalForgeExtention
-} = require("spinal-env-viewer-panel-manager-service_spinalforgeextention");
-
 const {
 	spinalPanelManagerService
 } = require("spinal-env-viewer-panel-manager-service");
 
-import Vue from 'vue';
-import deleteComponent from '../vue/deletePanel.vue';
-
-
 class SpinalContextDelete extends SpinalContextApp {
 	constructor() {
-		super("Delete button", "delete context", {
+		super("Delete button", "delete", {
 			icon: "delete",
-			icon_type: "in"
+			icon_type: "in",
+      backgroundColor: "#FF0000",
+      fontColor: "#FFFFFF"
 		});
 	}
 
-	isShown(option) {
-//		if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      			return (Promise.resolve(true));
-//		else
-//			return (-1);
+	isShown() {
+        return (Promise.resolve(true));
 	}
 
 	action(option) {
-    spinalPanelManagerService.openPanel("deletePanel", option);
+    spinalPanelManagerService.openPanel("standardButtonDelete", option);
 	}
 }
 
-const extentionDeletePanel = SpinalForgeExtention.createExtention({
-  name: "deletePanel",
-  vueMountComponent: Vue.extend(deleteComponent),
-  // toolbar is optional
-  panel: {
-    title: "Delete element",
-    classname: "spinal-pannel",
-    closeBehaviour: "hide"
-  },
-  style: {
-    left: "405px",
-    height: "159px",
-    'min-height': '16vh'
-  },
-  onload: () => {},
-  onUnLoad: () => {}
-});
-
-
-
-export { SpinalContextDelete, extentionDeletePanel };
+export { SpinalContextDelete };
