@@ -66,15 +66,8 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSel
 
 
 
-
-
-
-
-
-
 // 				/* 			Research Button				*/
-// import { SpinalContexResearch, extentionResearchPanel } from './js/researchButton.js';
+ import { SpinalContexResearch } from './js/researchButton.js';
 
-// spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
-// SpinalForgeExtention.registerExtention("searchPanel", extentionResearchPanel);
+ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
 

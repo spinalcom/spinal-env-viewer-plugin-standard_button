@@ -1,7 +1,7 @@
 import vue from "vue";
 import dialogDeleteComponent from "./vue/deletePanel.vue";
 import dialogRenameComponent from "./vue/renamePanel.vue";
-
+import dialogResearchComponent from "./vue/researchPanel.vue";
 
 const {
   SpinalMountExtention
@@ -26,4 +26,15 @@ const dialogsRename = [{
 
 for (let index = 0; index < dialogsRename.length; index++) {
   SpinalMountExtention.mount(dialogsRename[index]);
+}
+
+
+const dialogsResearch = [{
+  name: "standardButtonResearch",
+  vueMountComponent: vue.extend(dialogResearchComponent),
+  parentContainer: document.body
+}];
+
+for (let index = 0; index < dialogsResearch.length; index++) {
+  SpinalMountExtention.mount(dialogsResearch[index]);
 }

@@ -26,12 +26,7 @@ with this file. If not, see
   <div>
     <md-dialog :md-active.sync="showDialog"
                @md-closed="closeDialog(false)">
-      <md-dialog-title>Research element</md-dialog-title>
-      <md-dialog-content>
-        <md-field>
-          <md-input v-model="inputValue"></md-input>
-        </md-field>
-      </md-dialog-content>
+      <md-dialog-title>Delete {{ name }}</md-dialog-title>
       <md-dialog-actions>
         <md-button class="md-primary"
                    @click="closeDialog(false)">Cancel</md-button>
@@ -51,30 +46,20 @@ export default {
     return {
       showDialog: true,
       selectedNode: null,
-      inputValue: ""
+      name: ""
     };
   },
   methods: {
     opened(option) {
+      this.name = option.selectedNode.name.get();
       this.selectedNode = option.selectedNode;
-      this.viewer = window.spinal.ForgeViewer.viewer;
     },
     removed(option) {
       if (option.closeResult === true) {
-        let realNode = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-        let self = this;
+        let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
 
-        realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
-          function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
-            self.viewer.clearSelection();
-
-            for (var i = 0; i < lst.length; i++) {
-              if (lst[i].info.name.get() === self.inputValue )
-                self.viewer.select([ lst[i].info.dbid.get() ]);
-            }
-        });
-
-        self.showDialog = false;
+        node.removeFromGraph();
+        this.showDialog = false;
       }
       this.showDialog = false;
     },

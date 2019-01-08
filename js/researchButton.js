@@ -25,7 +25,6 @@
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-const spinalgraph = require("spinal-model-graph");
 
 const {
   SpinalForgeExtention
@@ -34,9 +33,6 @@ const {
 const {
   spinalPanelManagerService
 } = require("spinal-env-viewer-panel-manager-service");
-
-import researchComponent from '../vue/researchPanel.vue';
-import Vue from 'vue';
 
 
 class SpinalContexResearch extends SpinalContextApp {
@@ -47,7 +43,7 @@ class SpinalContexResearch extends SpinalContextApp {
     });
   }
 
-  isShown(option) {
+  isShown() {
   //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
       return (Promise.resolve(true));
 //    else
@@ -55,25 +51,9 @@ class SpinalContexResearch extends SpinalContextApp {
   }
 
   action(option) {
-    spinalPanelManagerService.openPanel("researchPanel", option);
+    spinalPanelManagerService.openPanel("standardButtonResearch", option);
   }
 }
 
-const extentionResearchPanel = SpinalForgeExtention.createExtention({
-  name: "researchPanel",
-  vueMountComponent: Vue.extend(researchComponent),
-  // toolbar is optional
-  panel: {
-    title: "Research a SpinalNode",
-    classname: "spinal-pannel",
-    closeBehaviour: "hide"
-  },
-  style: {
-    left: "405px"
-  },
-  onload: () => {},
-  onUnLoad: () => {}
-});
 
-
-export { SpinalContexResearch, extentionResearchPanel };
+export { SpinalContexResearch };
