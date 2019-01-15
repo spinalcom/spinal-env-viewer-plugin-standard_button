@@ -22,6 +22,8 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
@@ -42,26 +44,40 @@ class SpinalContextIsolation extends SpinalContextApp {
 //      return (-1);
   }
 
-  action() {
+  action(option) {
     this.viewer = window.spinal.ForgeViewer.viewer
-    let selection = this.viewer.getSelection();
+    let select = this.viewer.getSelection();
     let self = this;
-    this.viewer.clearSelection();
-    if (selection.length > 0) {
-      let dbIdsToChange = [];
-      selection.forEach(function (dbId) {
-          self.viewer.getProperties(dbId, function () {
+    if (select.length == 0) {
+      let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
+      this.viewer = window.spinal.ForgeViewer.viewer
+      realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
+        function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
+          //self.viewer.clearSelection();
+          let result = lst.map(x => x.info.dbid.get());
+          self.viewer.select(result);
+          let selection = this.viewer.getSelection();
 
-                  dbIdsToChange.push(dbId);
-                  if (dbIdsToChange.length > 0) {
-                      self.viewer.isolate(dbIdsToChange);
-                  }
-          })
-      })
-    }
-    else {
+          if (selection.length > 0) {
+            let dbIdsToChange = [];
+            selection.forEach(function (dbId) {
+              self.viewer.getProperties(dbId, function () {
+
+                dbIdsToChange.push(dbId);
+                if (dbIdsToChange.length > 0) {
+                   self.viewer.isolate(dbIdsToChange);
+                }
+              })
+            })
+          }
+          else {
+            self.viewer.isolate(0);
+          }
+      });
+      } else {
+        self.viewer.clearSelection();
         self.viewer.isolate(0);
-    }
+      }
   }
 }
 
