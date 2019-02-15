@@ -46,9 +46,7 @@ class SpinalContextFitToViewer extends SpinalContextApp {
   action(option) {
     window.spinal.ForgeViewer.viewer.impl.showGhosting = false;
     this.viewer = window.spinal.ForgeViewer.viewer
-    let select = this.viewer.getSelection();
     let self = this;
-    if (select.length == 0) {
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
     this.viewer = window.spinal.ForgeViewer.viewer
     realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
@@ -64,6 +62,7 @@ class SpinalContextFitToViewer extends SpinalContextApp {
 
                     dbIdsToChange.push(dbId);
                     if (dbIdsToChange.length > 0) {
+                        //this.dbId = dbIdsToChange
                         self.viewer.fitToView(dbIdsToChange);
                     }
             })
@@ -72,12 +71,7 @@ class SpinalContextFitToViewer extends SpinalContextApp {
       else {
           self.viewer.fitToView(0);
       }
-
       });
-    } else {
-        self.viewer.clearSelection();
-        self.viewer.fitToView(0);
-      }
   }
 }
 
