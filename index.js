@@ -42,9 +42,9 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRen
 
 
 				/* 			SortChild Button			*/
-import { SpinalContextSortByName } from './js/sortButton.js';
+//import { SpinalContextSortByName } from './js/sortButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSortByName());
+//spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSortByName());
 
 
 				/* 			SelectBIMObject Button 		*/
