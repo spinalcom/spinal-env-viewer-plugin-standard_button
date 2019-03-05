@@ -66,7 +66,7 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIso
 
 
 // 				/* 			Research Button				*/
-import { SpinalContexResearch } from './js/researchButton.js';
+//import { SpinalContexResearch } from './js/researchButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
+//spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
 
