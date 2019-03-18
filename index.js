@@ -32,13 +32,13 @@ const {
 				/* 			Delete Button  				*/
 import { SpinalContextDelete } from './js/deleteButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete(), [3]);
 
 
 				/* 			Rename Button  				*/
 import { SpinalContextRename } from './js/renameButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename(), [3]);
 
 
 				/* 			SortChild Button			*/
@@ -50,19 +50,19 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRen
 				/* 			SelectBIMObject Button 		*/
 import { SpinalContextSelectBIMObject } from './js/selectBIMObjectButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(),[32]);
 
 
 				/* 			Zoom Button  				*/
 import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer(), [32]);
 
 
 // 				/* 			Isolation Button  			*/
 import { SpinalContextIsolation } from './js/isolationButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation(), [3]);
 
 
 // 				/* 			Research Button				*/
