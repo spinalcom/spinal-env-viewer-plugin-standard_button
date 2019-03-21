@@ -50,13 +50,13 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRen
 				/* 			SelectBIMObject Button 		*/
 import { SpinalContextSelectBIMObject } from './js/selectBIMObjectButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(),[32]);
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(),[31]);
 
 
 				/* 			Zoom Button  				*/
 import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer(), [32]);
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer(), [31]);
 
 
 // 				/* 			Isolation Button  			*/
