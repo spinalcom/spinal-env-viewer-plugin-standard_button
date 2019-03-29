@@ -44,7 +44,6 @@ class SpinalContextFitToViewer extends SpinalContextApp {
   }
 
   action(option) {
-    window.spinal.ForgeViewer.viewer.impl.showGhosting = false;
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());

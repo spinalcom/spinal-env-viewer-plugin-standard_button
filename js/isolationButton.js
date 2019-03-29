@@ -47,7 +47,7 @@ class SpinalContextIsolation extends SpinalContextApp {
   action(option) {
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
-    if (this.isolate !== true) {
+    if (this.viewer.getIsolatedNodes().length === 0) {
       let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
       this.viewer = window.spinal.ForgeViewer.viewer
       realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
@@ -55,9 +55,7 @@ class SpinalContextIsolation extends SpinalContextApp {
           let result = lst.map(x => x.info.dbid.get());
           self.viewer.select(result);
           let selection = self.viewer.getSelection();
-
           if (selection.length > 0) {
-            self.isolate = true;
             self.viewer.isolate(selection);
           }
           else {
@@ -65,7 +63,7 @@ class SpinalContextIsolation extends SpinalContextApp {
           }
       });
       } else {
-        self.isolate = false;
+        self.viewer.clearSelection();
         self.viewer.isolate(0);
       }
   }
