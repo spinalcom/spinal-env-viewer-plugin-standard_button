@@ -32,41 +32,41 @@ const {
 				/* 			Delete Button  				*/
 import { SpinalContextDelete } from './js/deleteButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete(), [3]);
 
 
 				/* 			Rename Button  				*/
 import { SpinalContextRename } from './js/renameButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename(), [3]);
 
 
 				/* 			SortChild Button			*/
-import { SpinalContextSortByName } from './js/sortButton.js';
+//import { SpinalContextSortByName } from './js/sortButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSortByName());
+//spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSortByName());
 
 
 				/* 			SelectBIMObject Button 		*/
 import { SpinalContextSelectBIMObject } from './js/selectBIMObjectButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(),[31]);
 
 
 				/* 			Zoom Button  				*/
 import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer(), [31]);
 
 
 // 				/* 			Isolation Button  			*/
 import { SpinalContextIsolation } from './js/isolationButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation());
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation(), [3]);
 
 
 // 				/* 			Research Button				*/
-import { SpinalContexResearch } from './js/researchButton.js';
+//import { SpinalContexResearch } from './js/researchButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
+//spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
 

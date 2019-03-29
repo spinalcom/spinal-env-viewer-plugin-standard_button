@@ -8,6 +8,9 @@
   },
   "keywords": [],
   "author": "",
+  "dependencies": {
+    "spinal-env-viewer-panel-manager-service":"https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git"
+  },
   "license": "ISC",
   "dependencies": {
     "spinal-env-viewer-panel-manager-service":"https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git"
