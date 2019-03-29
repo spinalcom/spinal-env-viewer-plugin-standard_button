@@ -62,7 +62,7 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFit
 // 				/* 			Isolation Button  			*/
 import { SpinalContextIsolation } from './js/isolationButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation(), [3]);
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIsolation(), [31]);
 
 
 // 				/* 			Research Button				*/
