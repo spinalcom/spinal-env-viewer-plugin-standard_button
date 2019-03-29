@@ -56,17 +56,7 @@ class SpinalContextFitToViewer extends SpinalContextApp {
 
       let selection = this.viewer.getSelection();
       if (selection.length > 0) {
-        let dbIdsToChange = [];
-        selection.forEach(function (dbId) {
-            self.viewer.getProperties(dbId, function () {
-
-                    dbIdsToChange.push(dbId);
-                    if (dbIdsToChange.length > 0) {
-                        //this.dbId = dbIdsToChange
-                        self.viewer.fitToView(dbIdsToChange);
-                    }
-            })
-        })
+        self.viewer.fitToView(selection);
       }
       else {
           self.viewer.fitToView(0);

@@ -54,20 +54,11 @@ class SpinalContextIsolation extends SpinalContextApp {
         function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
           let result = lst.map(x => x.info.dbid.get());
           self.viewer.select(result);
-          let selection = this.viewer.getSelection();
+          let selection = self.viewer.getSelection();
 
           if (selection.length > 0) {
-            let dbIdsToChange = [];
-            selection.forEach(function (dbId) {
-              self.viewer.getProperties(dbId, function () {
-
-                dbIdsToChange.push(dbId);
-                if (dbIdsToChange.length > 0) {
-                  self.isolate = true;
-                  self.viewer.isolate(dbIdsToChange);
-                }
-              })
-            })
+            self.isolate = true;
+            self.viewer.isolate(selection);
           }
           else {
             self.viewer.isolate(0);
