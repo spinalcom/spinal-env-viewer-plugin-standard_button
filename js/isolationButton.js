@@ -23,49 +23,58 @@
  */
 
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+import { assemblyManagerService } from "spinal-service-assembly-manager";
 
 const {
   SpinalContextApp
-} = require("spinal-env-viewer-context-menu-service");
+} = require( "spinal-env-viewer-context-menu-service" );
 
 
 class SpinalContextIsolation extends SpinalContextApp {
   constructor() {
-    super("isolation button", "zoom button", {
+    super( "isolation button", "zoom button", {
       icon: "settings_overscan",
       icon_type: "in"
-    });
+    } );
   }
-
+  
   isShown() {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (Promise.resolve(true));
-//    else
-//      return (-1);
+    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+    return (Promise.resolve( true ));
+    //    else
+    //      return (-1);
   }
-
-  action(option) {
-    this.viewer = window.spinal.ForgeViewer.viewer
+  
+  action( option ) {
+    this.viewer = window.spinal.ForgeViewer.viewer;
+    this.assemblyManager = assemblyManagerService;
+  
     let self = this;
     if (this.viewer.getIsolatedNodes().length === 0) {
-      let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
-      this.viewer = window.spinal.ForgeViewer.viewer
-      realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
-        function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
-          let result = lst.map(x => x.info.dbid.get());
-          self.viewer.select(result);
-          let selection = self.viewer.getSelection();
-          if (selection.length > 0) {
-            self.viewer.isolate(selection);
+      let realNode = SpinalGraphService.getRealNode( option.selectedNode.id.get() );
+      realNode.find( [
+          "hasGeographicSite", "hasGeographicBuilding",
+          "hasGeographicFloor", "hasGeographicZone",
+          "hasGeographicRoom", "hasBIMObject"
+        ],
+        function ( node ) { if (node.info.type.get() === "BIMObject") return true; }
+      ).then( lst => {
+        let result = lst.map( x => x.info.dbid.get() );
+        self.viewer.select( result, self.assemblyManager._getCurrentModel() );
+        let aggregateSelection = self.viewer.getAggregateSelection();
+        
+        if (aggregateSelection.length > 0) {
+          for (let i = 0; i < aggregateSelection.length; i++) {
+            self.viewer.isolate( aggregateSelection[i].selection, aggregateSelection[i].model );
           }
-          else {
-            self.viewer.isolate(0);
-          }
-      });
-      } else {
-        self.viewer.clearSelection();
-        self.viewer.isolate(0);
-      }
+        } else {
+          self.viewer.isolate( 0 );
+        }
+      } );
+    } else {
+      self.viewer.clearSelection();
+      self.viewer.isolate( 0 );
+    }
   }
 }
 

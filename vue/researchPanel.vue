@@ -44,6 +44,7 @@ with this file. If not, see
 
 <script>
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+import { assemblyManagerService } from "spinal-service-assembly-manager";
 export default {
   name: "dialogComponent",
   props: ["onFinised"],
@@ -67,11 +68,13 @@ export default {
         realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
           function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
             self.viewer.clearSelection();
-
-            for (var i = 0; i < lst.length; i++) {
+            const dbids = [];
+            for (let i = 0; i < lst.length; i++) {
               if (lst[i].info.name.get() === self.inputValue )
-                self.viewer.select([ lst[i].info.dbid.get() ]);
+                dbids.push(lst[i].info.dbid.get())
             }
+          self.viewer.select(dbids,
+                  assemblyManagerService._getCurrentModel());
         });
 
         self.showDialog = false;

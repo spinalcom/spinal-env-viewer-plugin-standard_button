@@ -9,12 +9,10 @@
   "keywords": [],
   "author": "",
   "dependencies": {
-    "spinal-env-viewer-panel-manager-service":"https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git"
+    "spinal-env-viewer-panel-manager-service": "https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git",
+    "spinal-service-assembly-manager": "git+https://github.com/spinalcom/spinal-service-assembly-manager.git"
   },
   "license": "ISC",
-  "dependencies": {
-    "spinal-env-viewer-panel-manager-service":"https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git"
-  },
   "browserify": {
     "transform": [
       "vueify",

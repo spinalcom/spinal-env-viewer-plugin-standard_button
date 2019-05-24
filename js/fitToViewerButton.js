@@ -23,44 +23,51 @@
  */
 
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+import { assemblyManagerService } from "spinal-service-assembly-manager";
 
 const {
   SpinalContextApp
-} = require("spinal-env-viewer-context-menu-service");
+} = require( "spinal-env-viewer-context-menu-service" );
 
 class SpinalContextFitToViewer extends SpinalContextApp {
   constructor() {
-    super("fit button", "fit to viewer button", {
+    super( "fit button", "fit to viewer button", {
       icon: "zoom_in",
       icon_type: "in"
-    });
+    } );
   }
-
+  
   isShown() {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (Promise.resolve(true));
-//    else
-//      return (-1);
+    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+    return (Promise.resolve( true ));
+    //    else
+    //      return (-1);
   }
-
-  action(option) {
+  
+  action( option ) {
     this.viewer = window.spinal.ForgeViewer.viewer
+    this.assemblyManager = assemblyManagerService;
     let self = this;
-    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
-    this.viewer = window.spinal.ForgeViewer.viewer
-    realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
-      function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
-        let result = lst.map(x => x.info.dbid.get());
-        self.viewer.select(result);
-
-      let selection = this.viewer.getSelection();
-      if (selection.length > 0) {
-        self.viewer.fitToView(selection);
-      }
-      else {
-          self.viewer.fitToView(0);
-      }
-      });
+    let realNode = SpinalGraphService.getRealNode( option.selectedNode.id.get() );
+    realNode
+      .find( [
+          "hasGeographicSite", "hasGeographicBuilding",
+          "hasGeographicFloor", "hasGeographicZone",
+          "hasGeographicRoom", "hasBIMObject"
+        ],
+        function ( node ) { if (node.info.type.get() === "BIMObject") return true; }
+      )
+      .then( lst => {
+        let result = lst.map( x => x.info.dbid.get() );
+        self.viewer.select( result );
+        
+        let selection = this.viewer.getSelection();
+        if (selection.length > 0) {
+          self.viewer.fitToView( selection, self.assemblyManager._getCurrentModel() );
+        } else {
+          self.viewer.fitToView( 0 );
+        }
+      } );
   }
 }
 
