@@ -22,11 +22,21 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
+import {
+  SpinalGraphService
+} from 'spinal-env-viewer-graph-service';
 
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
+import {
+  ROOMS_CATEGORY_RELATION,
+  ROOMS_TO_ELEMENT_RELATION,
+  ROOMS_GROUP_RELATION,
+  EQUIPMENTS_CATEGORY_RELATION,
+  EQUIPMENTS_TO_ELEMENT_RELATION,
+  EQUIPMENTS_GROUP_RELATION
+} from 'spinal-env-viewer-room-manager/js/service'
 
 
 class SpinalContextSelectBIMObject extends SpinalContextApp {
@@ -38,23 +48,41 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
   }
 
   isShown() {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (Promise.resolve(true));
-//    else
-//      return (-1);
+    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+    return (Promise.resolve(true));
+    //    else
+    //      return (-1);
   }
 
   action(option) {
-    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
+    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
+      .get());
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
-    realNode.find(["hasGeographicSite", "hasGeographicBuilding", "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom", "hasBIMObject"],
-      function(node) { if (node.info.type.get() === "BIMObject") return true; }).then(lst => {
-        self.viewer.clearSelection();
-        let result = lst.map(x => x.info.dbid.get());
-        self.viewer.select(result);
-      });
+    let relationList = ["hasGeographicSite", "hasGeographicBuilding",
+      "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom",
+      "hasBIMObject", ROOMS_CATEGORY_RELATION,
+      ROOMS_TO_ELEMENT_RELATION,
+      ROOMS_GROUP_RELATION,
+      EQUIPMENTS_CATEGORY_RELATION,
+      EQUIPMENTS_TO_ELEMENT_RELATION,
+      EQUIPMENTS_GROUP_RELATION
+    ]
+    console.log(relationList);
+
+    realNode.find(relationList,
+      function(node) {
+        if (node.info.type.get() === "BIMObject") {
+          return true;
+        }
+      }).then(lst => {
+      self.viewer.clearSelection();
+      let result = lst.map(x => x.info.dbid.get());
+      self.viewer.select(result);
+    });
   }
 }
 
-export { SpinalContextSelectBIMObject };
+export {
+  SpinalContextSelectBIMObject
+};
