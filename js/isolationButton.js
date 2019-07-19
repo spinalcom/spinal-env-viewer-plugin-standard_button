@@ -54,23 +54,45 @@ class SpinalContextIsolation extends SpinalContextApp {
   action(option) {
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
+    let boolSameNode = false
+    let modelResetIsolate = []
+    let aggregateIsolation = []
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
       .get());
-    this.viewer = window.spinal.ForgeViewer.viewer
-    realNode.find(SELECTrelationList,
-      function(node) {
-        if (node.info.type.get() === "BIMObject") return true;
-      }).then(lst => {
-      utilities.sortBIMObjectByModel(lst).then(lstByModel => {
-        for (let i = 0; i < lstByModel.length; i++) {
-          const element = lstByModel[i];
-          for (let j = 0; j < element.model.modelScene.length; j++) {
-            const scene = element.model.modelScene[j];
-            self.viewer.isolate(element.dbid, scene.model)
+    if (this.lastNode == undefined) {
+      this.lastNode = realNode
+    } else {
+      aggregateIsolation = this.viewer.getAggregateIsolation()
+      if (this.lastNode.info.id.get() == realNode.info.id.get() &&
+        aggregateIsolation.length) {
+        boolSameNode = true
+      } else {
+        this.lastNode = realNode
+      }
+    }
+    if (boolSameNode) {
+      for (let i = 0; i < aggregateIsolation.length; i++) {
+        const element = aggregateIsolation[i];
+        self.viewer.isolate(0, element.model)
+      }
+    } else {
+      this.viewer = window.spinal.ForgeViewer.viewer
+      realNode.find(SELECTrelationList,
+        function(node) {
+          if (node.info.type.get() === "BIMObject") return true;
+        }).then(lst => {
+        utilities.sortBIMObjectByModel(lst).then(lstByModel => {
+          for (let i = 0; i < lstByModel.length; i++) {
+            const element = lstByModel[i];
+            for (let j = 0; j < element.model.modelScene
+              .length; j++) {
+              const scene = element.model.modelScene[j];
+              self.viewer.isolate(element.dbid, scene.model)
+            }
           }
-        }
-      })
-    });
+        })
+      });
+    }
   }
 }
 
