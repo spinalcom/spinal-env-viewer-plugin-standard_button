@@ -25,19 +25,15 @@
 import {
   SpinalGraphService
 } from 'spinal-env-viewer-graph-service';
-import {
-  ROOMS_CATEGORY_RELATION,
-  ROOMS_TO_ELEMENT_RELATION,
-  ROOMS_GROUP_RELATION,
-  EQUIPMENTS_CATEGORY_RELATION,
-  EQUIPMENTS_TO_ELEMENT_RELATION,
-  EQUIPMENTS_GROUP_RELATION
-} from 'spinal-env-viewer-room-manager/js/service'
 
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-
+import {
+  SELECTrelationList,
+  utilities,
+  removeFromIsShown
+} from "./utilities";
 class SpinalContextFitToViewer extends SpinalContextApp {
   constructor() {
     super("fit button", "fit to viewer button", {
@@ -46,11 +42,11 @@ class SpinalContextFitToViewer extends SpinalContextApp {
     });
   }
 
-  isShown() {
-    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+  isShown(option) {
+    const type = option.selectedNode.type.get();
+    if (removeFromIsShown.indexOf(type) > -1)
+      return (Promise.resolve(-1))
     return (Promise.resolve(true));
-    //    else
-    //      return (-1);
   }
 
   action(option) {
@@ -59,27 +55,25 @@ class SpinalContextFitToViewer extends SpinalContextApp {
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
       .get());
     this.viewer = window.spinal.ForgeViewer.viewer
-    realNode.find(["hasGeographicSite", "hasGeographicBuilding",
-        "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom",
-        "hasBIMObject", ROOMS_CATEGORY_RELATION,
-        ROOMS_TO_ELEMENT_RELATION,
-        ROOMS_GROUP_RELATION,
-        EQUIPMENTS_CATEGORY_RELATION,
-        EQUIPMENTS_TO_ELEMENT_RELATION,
-        EQUIPMENTS_GROUP_RELATION
-      ],
+    realNode.find(SELECTrelationList,
       function(node) {
         if (node.info.type.get() === "BIMObject") return true;
       }).then(lst => {
-      let result = lst.map(x => x.info.dbid.get());
-      self.viewer.select(result);
-
-      let selection = this.viewer.getSelection();
-      if (selection.length > 0) {
-        self.viewer.fitToView(selection);
-      } else {
-        self.viewer.fitToView(0);
-      }
+      utilities.sortBIMObjectByModel(lst).then(lstByModel => {
+        let arrayToFit = []
+        for (let i = 0; i < lstByModel.length; i++) {
+          const element = lstByModel[i];
+          let obj = {
+            model: element.model.modelScene[0].model,
+            selection: element.dbid
+          }
+          arrayToFit.push(obj);
+          obj.model.selector.setSelection(element.dbid, obj
+            .model,
+            "selectOnly")
+        }
+        self.viewer.fitToView(arrayToFit);
+      })
     });
   }
 }

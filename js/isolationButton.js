@@ -31,13 +31,10 @@ const {
 } = require("spinal-env-viewer-context-menu-service");
 
 import {
-  ROOMS_CATEGORY_RELATION,
-  ROOMS_TO_ELEMENT_RELATION,
-  ROOMS_GROUP_RELATION,
-  EQUIPMENTS_CATEGORY_RELATION,
-  EQUIPMENTS_TO_ELEMENT_RELATION,
-  EQUIPMENTS_GROUP_RELATION
-} from 'spinal-env-viewer-room-manager/js/service'
+  utilities,
+  SELECTrelationList,
+  removeFromIsShown
+} from "./utilities";
 
 class SpinalContextIsolation extends SpinalContextApp {
   constructor() {
@@ -47,45 +44,33 @@ class SpinalContextIsolation extends SpinalContextApp {
     });
   }
 
-  isShown() {
-    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+  isShown(option) {
+    const type = option.selectedNode.type.get();
+    if (removeFromIsShown.indexOf(type) > -1)
+      return (Promise.resolve(-1))
     return (Promise.resolve(true));
-    //    else
-    //      return (-1);
   }
 
   action(option) {
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
-    if (this.viewer.getIsolatedNodes().length === 0) {
-      let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
-        .get());
-      this.viewer = window.spinal.ForgeViewer.viewer
-      realNode.find(["hasGeographicSite", "hasGeographicBuilding",
-          "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom",
-          "hasBIMObject", ROOMS_CATEGORY_RELATION,
-          ROOMS_TO_ELEMENT_RELATION,
-          ROOMS_GROUP_RELATION,
-          EQUIPMENTS_CATEGORY_RELATION,
-          EQUIPMENTS_TO_ELEMENT_RELATION,
-          EQUIPMENTS_GROUP_RELATION
-        ],
-        function(node) {
-          if (node.info.type.get() === "BIMObject") return true;
-        }).then(lst => {
-        let result = lst.map(x => x.info.dbid.get());
-        self.viewer.select(result);
-        let selection = self.viewer.getSelection();
-        if (selection.length > 0) {
-          self.viewer.isolate(selection);
-        } else {
-          self.viewer.isolate(0);
+    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
+      .get());
+    this.viewer = window.spinal.ForgeViewer.viewer
+    realNode.find(SELECTrelationList,
+      function(node) {
+        if (node.info.type.get() === "BIMObject") return true;
+      }).then(lst => {
+      utilities.sortBIMObjectByModel(lst).then(lstByModel => {
+        for (let i = 0; i < lstByModel.length; i++) {
+          const element = lstByModel[i];
+          for (let j = 0; j < element.model.modelScene.length; j++) {
+            const scene = element.model.modelScene[j];
+            self.viewer.isolate(element.dbid, scene.model)
+          }
         }
-      });
-    } else {
-      self.viewer.clearSelection();
-      self.viewer.isolate(0);
-    }
+      })
+    });
   }
 }
 

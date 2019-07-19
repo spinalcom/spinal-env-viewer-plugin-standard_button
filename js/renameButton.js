@@ -41,8 +41,12 @@ class SpinalContextRename extends SpinalContextApp {
     });
   }
 
-  isShown() {
-      return (Promise.resolve(true));
+  isShown(option) {
+    // const type = option.selectedNode.type.get();
+    // if (type === "SpinalService" || type === "scene" || type ===
+    //   "SpinalContext" || type === "BimFile")
+    //   return (Promise.resolve(-1))
+    return (Promise.resolve(true));
   }
 
   action(option) {
@@ -50,4 +54,6 @@ class SpinalContextRename extends SpinalContextApp {
   }
 }
 
-export { SpinalContextRename };
+export {
+  SpinalContextRename
+};

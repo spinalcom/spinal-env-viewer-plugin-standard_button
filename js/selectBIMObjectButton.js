@@ -29,15 +29,12 @@ import {
 const {
   SpinalContextApp
 } = require("spinal-env-viewer-context-menu-service");
-import {
-  ROOMS_CATEGORY_RELATION,
-  ROOMS_TO_ELEMENT_RELATION,
-  ROOMS_GROUP_RELATION,
-  EQUIPMENTS_CATEGORY_RELATION,
-  EQUIPMENTS_TO_ELEMENT_RELATION,
-  EQUIPMENTS_GROUP_RELATION
-} from 'spinal-env-viewer-room-manager/js/service'
 
+import {
+  utilities,
+  SELECTrelationList,
+  removeFromIsShown
+} from "./utilities";
 
 class SpinalContextSelectBIMObject extends SpinalContextApp {
   constructor() {
@@ -47,11 +44,11 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
     });
   }
 
-  isShown() {
-    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+  isShown(option) {
+    const type = option.selectedNode.type.get();
+    if (removeFromIsShown.indexOf(type) > -1)
+      return (Promise.resolve(-1))
     return (Promise.resolve(true));
-    //    else
-    //      return (-1);
   }
 
   action(option) {
@@ -59,26 +56,24 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
       .get());
     this.viewer = window.spinal.ForgeViewer.viewer
     let self = this;
-    let relationList = ["hasGeographicSite", "hasGeographicBuilding",
-      "hasGeographicFloor", "hasGeographicZone", "hasGeographicRoom",
-      "hasBIMObject", ROOMS_CATEGORY_RELATION,
-      ROOMS_TO_ELEMENT_RELATION,
-      ROOMS_GROUP_RELATION,
-      EQUIPMENTS_CATEGORY_RELATION,
-      EQUIPMENTS_TO_ELEMENT_RELATION,
-      EQUIPMENTS_GROUP_RELATION
-    ]
-    console.log(relationList);
-
-    realNode.find(relationList,
+    realNode.find(SELECTrelationList,
       function(node) {
         if (node.info.type.get() === "BIMObject") {
           return true;
         }
       }).then(lst => {
       self.viewer.clearSelection();
-      let result = lst.map(x => x.info.dbid.get());
-      self.viewer.select(result);
+      utilities.sortBIMObjectByModel(lst).then(lstByModel => {
+        for (let i = 0; i < lstByModel.length; i++) {
+          const element = lstByModel[i];
+          for (let j = 0; j < element.model.modelScene.length; j++) {
+            const scene = element.model.modelScene[j];
+            scene.model.selector.setSelection(element.dbid, scene
+              .model,
+              "selectOnly")
+          }
+        }
+      })
     });
   }
 }

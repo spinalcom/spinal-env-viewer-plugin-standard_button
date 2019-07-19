@@ -40,10 +40,7 @@ class SpinalContexResearch extends SpinalContextApp {
   }
 
   isShown() {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (Promise.resolve(true));
-//    else
-//      return (-1);
+    return (Promise.resolve(true));
   }
 
   action(option) {
@@ -52,4 +49,6 @@ class SpinalContexResearch extends SpinalContextApp {
 }
 
 
-export { SpinalContexResearch };
+export {
+  SpinalContexResearch
+};

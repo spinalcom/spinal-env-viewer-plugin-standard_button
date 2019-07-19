@@ -22,7 +22,9 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import { search_node } from './external.js';
+import {
+  search_node
+} from './external.js';
 
 const {
   SpinalContextApp
@@ -37,17 +39,24 @@ class SpinalContextSortByName extends SpinalContextApp {
     this.sorted = false;
   }
 
-  isShown() {
-  //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
-      return (Promise.resolve(true));
-//    else
-//      return (-1);
+  isShown(option) {
+    const type = option.selectedNode.type.get();
+    if (type === "SpinalService" || type === "scene" || type ===
+      "SpinalContext" || type === "BimFile")
+      return (Promise.resolve(-1))
+    //  if (option.selectedNode instanceof spinalgraph.SpinalContext)
+    return (Promise.resolve(true));
+    //    else
+    //      return (-1);
   }
 
   action(option) {
-    search_node(option.selectedNode, this.sorted, option.selectedNode.name.get());
+    search_node(option.selectedNode, this.sorted, option.selectedNode.name
+      .get());
     this.sorted = !this.sorted;
   }
 }
- 
-export { SpinalContextSortByName };
+
+export {
+  SpinalContextSortByName
+};
