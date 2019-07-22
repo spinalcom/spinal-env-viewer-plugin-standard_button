@@ -84,10 +84,20 @@ class SpinalContextIsolation extends SpinalContextApp {
         utilities.sortBIMObjectByModel(lst).then(lstByModel => {
           for (let i = 0; i < lstByModel.length; i++) {
             const element = lstByModel[i];
+            // self.viewer.showModel(element.model.modelId)
             for (let j = 0; j < element.model.modelScene
               .length; j++) {
               const scene = element.model.modelScene[j];
-              self.viewer.isolate(element.dbid, scene.model)
+              if (element.dbid.length != 0) {
+                self.viewer.isolate(element.dbid, scene.model)
+              } else {
+                let rootId = scene.model.getRootId()
+                scene.model.getObjectTree((tree) => {
+                  let dbidRoot = tree.nodeAccess.dbIdToIndex[
+                    rootId]
+                  self.viewer.isolate([dbidRoot], scene.model)
+                })
+              }
             }
           }
         })

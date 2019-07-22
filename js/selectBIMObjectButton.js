@@ -68,6 +68,7 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
           const element = lstByModel[i];
           for (let j = 0; j < element.model.modelScene.length; j++) {
             const scene = element.model.modelScene[j];
+            // console.log("hello select", element.dbid, scene.model);
             scene.model.selector.setSelection(element.dbid, scene
               .model,
               "selectOnly")
