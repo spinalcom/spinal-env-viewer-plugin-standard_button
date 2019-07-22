@@ -33,7 +33,7 @@ const {
 import {
   utilities,
   SELECTrelationList,
-  removeFromIsShown
+  isShownParam
 } from "./utilities";
 
 class SpinalContextSelectBIMObject extends SpinalContextApp {
@@ -46,9 +46,9 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
 
   isShown(option) {
     const type = option.selectedNode.type.get();
-    if (removeFromIsShown.indexOf(type) > -1)
-      return (Promise.resolve(-1))
-    return (Promise.resolve(true));
+    if (isShownParam.indexOf(type) > -1)
+      return (Promise.resolve(true));
+    return (Promise.resolve(-1))
   }
 
   action(option) {

@@ -33,7 +33,7 @@ const {
 import {
   utilities,
   SELECTrelationList,
-  removeFromIsShown
+  isShownParam
 } from "./utilities";
 
 class SpinalContextIsolation extends SpinalContextApp {
@@ -46,9 +46,9 @@ class SpinalContextIsolation extends SpinalContextApp {
 
   isShown(option) {
     const type = option.selectedNode.type.get();
-    if (removeFromIsShown.indexOf(type) > -1)
-      return (Promise.resolve(-1))
-    return (Promise.resolve(true));
+    if (isShownParam.indexOf(type) > -1)
+      return (Promise.resolve(true));
+    return (Promise.resolve(-1))
   }
 
   action(option) {
@@ -84,7 +84,6 @@ class SpinalContextIsolation extends SpinalContextApp {
         utilities.sortBIMObjectByModel(lst).then(lstByModel => {
           for (let i = 0; i < lstByModel.length; i++) {
             const element = lstByModel[i];
-            // self.viewer.showModel(element.model.modelId)
             for (let j = 0; j < element.model.modelScene
               .length; j++) {
               const scene = element.model.modelScene[j];
