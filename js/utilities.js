@@ -71,17 +71,22 @@ const utilities = {
     for (let i = 0; i < arrayOfBIMObject.length; i++) {
       let bim = SpinalGraphService.getNode(arrayOfBIMObject[i].info.id
         .get())
-      let spinalModel = window.spinal.BimObjectService
-        .mappingBimFileIdModelId[
+         try {
+        let spinalModel = window.spinal.BimObjectService
+          .mappingBimFileIdModelId[
           bim.bimFileId
-          .get()]
-      if (spinalModel) {
-        for (let j = 0; j < arrayModel.length; j++) {
-          const element = arrayModel[j];
-          if (element.model.modelId === spinalModel.modelId) {
-            element.dbid.push(bim.dbid.get())
+            .get()]
+        if (spinalModel) {
+          for (let j = 0; j < arrayModel.length; j++) {
+            const element = arrayModel[j];
+            if (element.model.modelId === spinalModel.modelId) {
+              element.dbid.push(bim.dbid.get())
+            }
           }
         }
+
+      } catch (error) {
+        console.error("skip node because bimFileId is not defined", error)
       }
     }
     return arrayModel;
