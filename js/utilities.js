@@ -69,6 +69,7 @@ const utilities = {
       }
     }
     for (let i = 0; i < arrayOfBIMObject.length; i++) {
+      SpinalGraphService._addNode(arrayOfBIMObject[i])
       let bim = SpinalGraphService.getNode(arrayOfBIMObject[i].info.id
         .get())
          try {
