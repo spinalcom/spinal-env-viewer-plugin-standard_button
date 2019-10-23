@@ -22,9 +22,7 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import {
-  SpinalGraphService
-} from 'spinal-env-viewer-graph-service';
+import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
 
 const {
   SpinalContextApp
@@ -46,18 +44,17 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
 
   isShown(option) {
     const type = option.selectedNode.type.get();
-    if (isShownParam.indexOf(type) > -1)
-      return (Promise.resolve(true));
-    return (Promise.resolve(-1))
+    if (isShownParam.indexOf(type) > -1) { return (Promise.resolve(true)); }
+    return (Promise.resolve(-1));
   }
 
   action(option) {
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
       .get());
-    this.viewer = window.spinal.ForgeViewer.viewer
+    this.viewer = window.spinal.ForgeViewer.viewer;
     let self = this;
     realNode.find(SELECTrelationList,
-      function(node) {
+      function (node) {
         if (node.info.type.get() === "BIMObject") {
           return true;
         }
@@ -69,12 +66,10 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
           for (let j = 0; j < element.model.modelScene.length; j++) {
             const scene = element.model.modelScene[j];
             // console.log("hello select", element.dbid, scene.model);
-            scene.model.selector.setSelection(element.dbid, scene
-              .model,
-              "selectOnly")
+            scene.model.selector.setSelection(element.dbid, scene.model, "selectOnly");
           }
         }
-      })
+      });
     });
   }
 }
