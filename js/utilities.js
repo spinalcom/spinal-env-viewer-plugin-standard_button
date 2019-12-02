@@ -1,18 +1,24 @@
-import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
 import {
-  ROOMS_CATEGORY_RELATION,
-  ROOMS_TO_ELEMENT_RELATION,
-  ROOMS_GROUP_RELATION,
-  EQUIPMENTS_CATEGORY_RELATION,
-  EQUIPMENTS_TO_ELEMENT_RELATION,
-  EQUIPMENTS_GROUP_RELATION,
-  ROOMS_GROUP_CONTEXT,
-  ROOMS_GROUP,
-  ROOMS_CATEGORY,
-  EQUIPMENTS_GROUP_CONTEXT,
-  EQUIPMENTS_CATEGORY,
-  EQUIPMENTS_GROUP
-} from 'spinal-env-viewer-room-manager/js/service';
+  SpinalGraphService
+} from 'spinal-env-viewer-graph-service';
+import {
+  // ROOMS_CATEGORY_RELATION,
+  // ROOMS_TO_ELEMENT_RELATION,
+  // ROOMS_GROUP_RELATION,
+  // EQUIPMENTS_CATEGORY_RELATION,
+  // EQUIPMENTS_TO_ELEMENT_RELATION,
+  // EQUIPMENTS_GROUP_RELATION,
+  // ROOMS_GROUP_CONTEXT,
+  // ROOMS_GROUP,
+  // ROOMS_CATEGORY,
+  // EQUIPMENTS_GROUP_CONTEXT,
+  // EQUIPMENTS_CATEGORY,
+  // EQUIPMENTS_GROUP
+
+  groupService
+
+} from 'spinal-env-viewer-room-manager/services/service';
+
 import {
   SITE_TYPE,
   BUILDING_TYPE,
@@ -38,12 +44,11 @@ const SELECTrelationList = [
   EQUIPMENT_RELATION,
   REFERENCE_RELATION,
   "hasBIMObject", // for old system
-  ROOMS_CATEGORY_RELATION,
-  ROOMS_TO_ELEMENT_RELATION,
-  ROOMS_GROUP_RELATION,
-  EQUIPMENTS_CATEGORY_RELATION,
-  EQUIPMENTS_TO_ELEMENT_RELATION,
-  EQUIPMENTS_GROUP_RELATION
+  groupService.constants.CONTEXT_TO_CATEGORY_RELATION,
+  groupService.constants.CATEGORY_TO_GROUP_RELATION,
+  groupService.constants.GROUP_TO_ROOMS_RELATION,
+  groupService.constants.GROUP_TO_EQUIPMENTS_RELATION,
+  groupService.constants.GROUP_TO_ENDPOINT_RELATION,
 ];
 
 const isShownParam = [
@@ -53,19 +58,16 @@ const isShownParam = [
   ZONE_TYPE,
   ROOM_TYPE,
   EQUIPMENT_TYPE,
-  ROOMS_GROUP_CONTEXT,
-  ROOMS_GROUP,
-  ROOMS_CATEGORY,
-  EQUIPMENTS_GROUP_CONTEXT,
-  EQUIPMENTS_CATEGORY,
-  EQUIPMENTS_GROUP
+  ...groupService.constants.CONTEXTS_TYPES,
+  ...groupService.constants.GROUPS_TYPES,
+  groupService.constants.CATEGORY_TYPE
 ];
 
 const utilities = {
   async sortBIMObjectByModel(arrayOfBIMObject) {
     let arrayModel = [];
     for (const key in spinal.BimObjectService
-      .mappingBimFileIdModelId) {
+        .mappingBimFileIdModelId) {
       if (spinal.BimObjectService
         .mappingBimFileIdModelId.hasOwnProperty(key)) {
         const element = spinal.BimObjectService
@@ -85,7 +87,7 @@ const utilities = {
         let spinalModel = window.spinal.BimObjectService
           .mappingBimFileIdModelId[
             bim.bimFileId
-              .get()];
+            .get()];
         if (spinalModel) {
           for (let j = 0; j < arrayModel.length; j++) {
             const element = arrayModel[j];
