@@ -34,6 +34,8 @@ import {
   utilities,
   isShownParam
 } from "./utilities";
+
+
 class SpinalContextFitToViewer extends SpinalContextApp {
   constructor() {
     super("fit button", "fit to viewer button", {
@@ -55,6 +57,7 @@ class SpinalContextFitToViewer extends SpinalContextApp {
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
       .get());
     this.viewer = window.spinal.ForgeViewer.viewer
+
     realNode.find(SELECTrelationList,
       function(node) {
         if (node.info.type.get() === "BIMObject") return true;
