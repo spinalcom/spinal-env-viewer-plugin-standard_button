@@ -29,31 +29,31 @@ const {
 } = require("spinal-env-viewer-context-menu-service");
 
 
-				/* 			Delete Button  				*/
+/* 			Delete Button  				*/
 import { SpinalContextDelete } from './js/deleteButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextDelete(), [3]);
 
 
-				/* 			Rename Button  				*/
+/* 			Rename Button  				*/
 import { SpinalContextRename } from './js/renameButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextRename(), [3]);
 
 
-				/* 			SortChild Button			*/
+/* 			SortChild Button			*/
 //import { SpinalContextSortByName } from './js/sortButton.js';
 
 //spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSortByName());
 
 
-				/* 			SelectBIMObject Button 		*/
+/* 			SelectBIMObject Button 		*/
 import { SpinalContextSelectBIMObject } from './js/selectBIMObjectButton.js';
 
-spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(),[31]);
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextSelectBIMObject(), [31]);
 
 
-				/* 			Zoom Button  				*/
+/* 			Zoom Button  				*/
 import { SpinalContextFitToViewer } from './js/fitToViewerButton.js';
 
 spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextFitToViewer(), [31]);
@@ -70,3 +70,5 @@ spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContextIso
 
 //spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalContexResearch());
 
+import { SpinalEditColor } from "./js/addColor";
+spinalContextMenuService.registerApp("GraphManagerSideBar", new SpinalEditColor(), [3]);

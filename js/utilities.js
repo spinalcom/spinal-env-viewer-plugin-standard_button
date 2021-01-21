@@ -22,7 +22,7 @@
  * <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import {SpinalGraphService} from 'spinal-env-viewer-graph-service';
+import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
 // import {
 //   // ROOMS_CATEGORY_RELATION,
 //   // ROOMS_TO_ELEMENT_RELATION,
@@ -41,7 +41,7 @@ import {SpinalGraphService} from 'spinal-env-viewer-graph-service';
 
 // } from 'spinal-env-viewer-room-manager/services/service';
 
-import {groupManagerService} from "spinal-env-viewer-plugin-group-manager-service";
+import { groupManagerService } from "spinal-env-viewer-plugin-group-manager-service";
 
 import {
   SITE_TYPE,
@@ -59,7 +59,9 @@ import {
   REFERENCE_RELATION
 } from 'spinal-env-viewer-context-geographic-service/build/constants';
 
-import {SpinalBmsEndpoint} from 'spinal-model-bmsnetwork';
+import { SpinalBmsEndpoint } from 'spinal-model-bmsnetwork';
+
+import spinalNetworkTreeService from "spinal-env-viewer-plugin-network-tree/src/services";
 
 const SELECTrelationList = [
   SITE_RELATION,
@@ -85,7 +87,10 @@ const SELECTrelationList = [
   `groupHas${BUILDING_TYPE}`,
   `groupHas${FLOOR_TYPE}`,
   `groupHas${ZONE_TYPE}`,
-  `groupHas${SpinalBmsEndpoint.nodeTypeName}`
+  `groupHas${SpinalBmsEndpoint.nodeTypeName}`,
+  spinalNetworkTreeService.constants.NETWORK_RELATION,
+  spinalNetworkTreeService.constants.NETWORK_BIMOJECT_RELATION
+
 ];
 
 const isShownParam = [
@@ -112,7 +117,9 @@ const isShownParam = [
   `${SITE_TYPE}GroupContext`,
   `${BUILDING_TYPE}GroupContext`,
   `${FLOOR_TYPE}GroupContext`,
-  `${ZONE_TYPE}GroupContext`
+  `${ZONE_TYPE}GroupContext`,
+  spinalNetworkTreeService.constants.CONTEXT_TYPE,
+  spinalNetworkTreeService.constants.NETWORK_TYPE
 ];
 
 const utilities = {
@@ -138,8 +145,8 @@ const utilities = {
       try {
         let spinalModel = window.spinal.BimObjectService
           .mappingBimFileIdModelId[
-            bim.bimFileId
-              .get()];
+          bim.bimFileId
+            .get()];
         if (spinalModel) {
           for (let j = 0; j < arrayModel.length; j++) {
             const element = arrayModel[j];
