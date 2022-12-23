@@ -41,7 +41,6 @@ with this file. If not, see
           :key="option"
           :value="option"
         >
-
           {{ option }}
         </md-option>
       </md-select>
@@ -51,11 +50,21 @@ with this file. If not, see
       <md-radio class="md-primary" v-model="selectedOption" value="2"> This node's children nodes </md-radio>
       <md-radio class="md-primary" v-model="selectedOption" value="3"> This node <strong> and </strong> children nodes </md-radio>
       <md-radio class="md-primary" v-model="selectedOption" value="4"> All nodes of similar type in the same context</md-radio>
+      <md-field v-if="selectedOption === '4' || selectedOption === '3' || selectedOption === '2'">
+      <v-text-field 
+        v-model="strFilter"
+        color="white"
+        placeholder="name contrains substring"
+        autocomplete="off"
+        label="Optional filter : Name of nodes should contain substring"
+      />
+      </md-field>
+      
       <div>
         <strong> Exclude if : </strong>
-        <md-radio :disabled="selectedOption == '1'" v-model="excludeOption" value="1"> Node has another parent </md-radio>
-        <md-radio :disabled="selectedOption == '1'" v-model="excludeOption" value="2"> Node has another parent in the same context </md-radio>
-        <md-radio :disabled="selectedOption == '1'" v-model="excludeOption" value="3"> Node has another parent in another context </md-radio>
+        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="1"> Node has another parent </md-radio>
+        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="2"> Node has another parent in the same context </md-radio>
+        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="3"> Node has another parent in another context </md-radio>
       </div>
     </div>
 
@@ -64,7 +73,10 @@ with this file. If not, see
       <md-radio class="md-primary" v-model="selectedOption" value="1"> Relation with parent in this context </md-radio>
       <md-radio class="md-primary" v-model="selectedOption" value="2"> Children relations </md-radio>
       <md-radio disabled class="md-primary" v-model="selectedOption" value="3"> Parent relations (NYI) </md-radio>
-      <md-button> Search relations </md-button>
+      <md-button v-if="selectedOption == '2'" @click="searchRelations()"> Search relations </md-button>
+      <div v-if="searchedRelations.length > 0">
+      <md-checkbox v-for="item in searchedRelations" :key="item" v-model="selectedRelations" :value="item">{{item}}</md-checkbox>
+      </div>
     
 
 
@@ -96,6 +108,9 @@ export default {
       excludeOption: null,
       relationNames: null,
       modeOptions: ["Delete nodes", "Delete relations"],
+      searchedRelations: [],
+      selectedRelations: [],
+      strFilter : "",
       name: ""
     };
   },
@@ -122,59 +137,59 @@ export default {
 
     deleteChildren(){
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      let children = node.getChildren();
-      for(let i = 0; i < children.length; i++){
-        children[i].removeFromGraph();
-      }
+      node.getChildren().then((children) => {
+        this.applyFilter(children).then((filteredChildren) => {
+          const strFilteredChildren = this.applyStrFilter(filteredChildren); 
+          console.log(strFilteredChildren);
+          for(const child of strFilteredChildren){
+            child.removeFromGraph();
+          }
+        });
+      });
     },
 
     deleteNodeAndChildren(){
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      let children = node.getChildren();
-      for(let i = 0; i < children.length; i++){
-        children[i].removeFromGraph();
-      }
+      node.getChildren().then((children) => {
+        this.applyFilter(children).then((filteredChildren) => {
+          const strFilteredChildren = this.applyStrFilter(filteredChildren); 
+          for(const child of strFilteredChildren){
+            child.removeFromGraph();
+          }
+        });
+      });
       node.removeFromGraph();
     },
 
     deleteAllNodesOfSameTypeInSameContext(){
-      //console.log("deleteAllNodesOfSameType");
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       SpinalGraphService.findInContextByType(this.selectedContext.id.get(),this.selectedContext.id.get(), node.getType().get()).then((nodes) => {
-        console.log(nodes);
-        for(let i = 0; i < nodes.length; i++){
-          if(nodes[i].id.get() !== node.id.get()){
-            nodes[i].removeFromGraph();
-          }
+        const strFilteredNodes = this.applyStrFilter(nodes); 
+        for(const node of strFilteredNodes){
+          let realNode = SpinalGraphService.getRealNode(node.id.get());
+          realNode.removeFromGraph();
         }
       });
     },
 
-    removeChild(p,node,r){
-      try{
-        p.removeChild(node, r,SPINAL_RELATION_PTR_LST_TYPE);
-      }
-      catch(e){
-        try{
-          p.removeChild(node, r,SPINAL_RELATION_LST_PTR_TYPE);
-        } catch(e){
-          console.log(e);
-        }
-      }
-    },
+    
 
     deleteRelationWithParentInContext(){
       console.log("deleteRelationWithParentInContext");
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
+      // look for parents
       node.getParents().then((parents) => {
         console.log("parents : ", parents);
         for(const p of parents){
-        console.log(p.getContextIds());
+        // if parent is in the same context
         if(p.getContextIds().includes(this.selectedContext.id.get())){
+          console.log("Parent of same context found : ", p.info.name.get())
+          // look for relations
           for(const r of p.getRelationNames()){
+            // Verify if the node is a child of the parent
             SpinalGraphService.isChild(p.info.id.get(), this.selectedNode.id.get(), r).then((res) => {
               if(res){
-                console.log("Attempting to remove");
+                console.log("Attempting to remove" );
                 try{
                   p.removeChild(node, r,SPINAL_RELATION_PTR_LST_TYPE);
                   console.log("Removed")
@@ -201,8 +216,7 @@ export default {
     deleteChildrenRelations(){
       console.log("deleteChildrenRelations");
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      for(const r of node.getRelationNames()){
-        if(r === "hasCategoryAttributes") continue;
+      for(const r of this.selectedRelations){
         try{
           console.log("Trying to remove relation : ", r);
           node.removeRelation(r,SPINAL_RELATION_PTR_LST_TYPE);
@@ -215,11 +229,78 @@ export default {
         }  
       }
     },
+
+    searchRelations(){
+      let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
+      let relations = node.getRelationNames();
+      this.searchedRelations = relations;
+      this.selectedRelations = relations;
+      console.log(relations);
+    },
+
+    async applyFilter(nodes){
+      switch(this.excludeOption){
+        case "1": // filter out the nodes that have a parent that is not the selected node
+          return nodes.filter((node) => {
+            node.getParents().then((parents) => {
+              for(const p of parents){
+                if(p.info.id.get() != this.selectedNode.id.get()){
+                  return false;
+                }
+              }
+              return true;
+            });
+          });
+        case "2": // filter out the nodes that have another parent in the same context
+          return nodes.filter((node) => {
+            node.getParents().then((parents) => { 
+              for(const p of parents){ // for each parent
+                if(p.info.id.get() != this.selectedNode.id.get()){ //if the parent is not the selected node
+                  const parentContextIds = p.getContextIds(); // get the context ids of the parent
+                  for(const c of parentContextIds){ // for each context id of the parent
+                    if(c.includes(this.selectedContext.id.get())){ // if the context id the same as the selected context
+                      return false;
+                    }
+                  }
+                }
+              }
+              return true;
+            });
+          });
+        case "3":
+          return nodes.filter((node) => {
+            node.getParents().then((parents) => { 
+              for(const p of parents){ // for each parent
+                if(p.info.id.get() != this.selectedNode.id.get()){ //if the parent is not the selected node
+                  const parentContextIds = p.getContextIds(); // get the context ids of the parent
+                  for(const c of parentContextIds){ // for each context id of the parent
+                    if(!c.includes(this.selectedContext.id.get())){ // if the context id is not the same as the selected context
+                      return false;
+                    }
+                  }
+                }
+              }
+              return true;
+            });
+          });
+        default:
+          return nodes;
+      }
+    },
+
+    applyStrFilter(nodes){
+      if(this.strFilter == "") return nodes;
+      return nodes.filter((node) => {
+        if(node.info.name.get().includes(this.strFilter)){
+          return true;
+        }
+        else{
+          return false;
+        }
+      });
+    },
+
     
-
-
-    
-
     routage(){
       if(this.selectedMode === "Delete nodes"){ 
         if(this.selectedOption === "1"){
@@ -248,13 +329,18 @@ export default {
       }
     },
     
-
-
-
-
-
-
-
+    removeChild(p,node,r){
+      try{
+        p.removeChild(node, r,SPINAL_RELATION_PTR_LST_TYPE);
+      }
+      catch(e){
+        try{
+          p.removeChild(node, r,SPINAL_RELATION_LST_PTR_TYPE);
+        } catch(e){
+          console.log(e);
+        }
+      }
+    },
 
     closeDialog(closeResult) {
       if (typeof this.onFinised === "function") {
