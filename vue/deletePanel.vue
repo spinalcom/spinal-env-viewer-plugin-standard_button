@@ -24,136 +24,194 @@ with this file. If not, see
 
 <template>
   <div>
-    <md-dialog :md-active.sync="showDialog"
-               @md-closed="closeDialog(false)"
-               >
-      <md-dialog-title>Delete action on node selected : {{ name }}</md-dialog-title>
-      <div class ="DeleteMainBody">
-      <md-field>
-      <label for="Select how you want the delete to operate"> Select how you want the delete to operate </label>
-      <md-select 
-        id="modeSelect"
-        name="modeSelect"
-        v-model="selectedMode" 
-        >
-        <md-option
-          v-for="option in modeOptions"
-          :key="option"
-          :value="option"
-        >
-          {{ option }}
-        </md-option>
-      </md-select>
-      </md-field>
-    <div v-if="selectedMode==='Delete nodes'">
-      <md-radio class="md-primary" v-model="selectedOption" value="1"> This node only </md-radio>
-      <md-radio class="md-primary" v-model="selectedOption" value="2"> This node's children nodes </md-radio>
-      <md-radio class="md-primary" v-model="selectedOption" value="3"> This node <strong> and </strong> children nodes </md-radio>
-      <md-radio class="md-primary" v-model="selectedOption" value="4"> All nodes of similar type in the same context</md-radio>
-      <md-field v-if="selectedOption === '4' || selectedOption === '3' || selectedOption === '2'">
-      <v-text-field 
-        v-model="strFilter"
-        color="white"
-        placeholder="name contrains substring"
-        autocomplete="off"
-        label="Optional filter : Name of nodes should contain substring"
-      />
-      </md-field>
-      
-      <div>
-        <strong> Exclude if : </strong>
-        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="1"> Node has another parent </md-radio>
-        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="2"> Node has another parent in the same context </md-radio>
-        <md-radio :disabled="selectedOption == '1' || selectedOption=='4'" v-model="excludeOption" value="3"> Node has another parent in another context </md-radio>
+    <md-dialog :md-active.sync="showDialog" @md-closed="closeDialog(false)">
+      <md-dialog-title
+        >Delete action on node selected : {{ name }}</md-dialog-title
+      >
+      <div class="DeleteMainBody">
+        <md-field>
+          <label for="Select how you want the delete to operate">
+            Select how you want the delete to operate
+          </label>
+          <md-select id="modeSelect" name="modeSelect" v-model="selectedMode">
+            <md-option
+              v-for="option in modeOptions"
+              :key="option"
+              :value="option"
+            >
+              {{ option }}
+            </md-option>
+          </md-select>
+        </md-field>
+        <div v-if="selectedMode === 'Delete nodes'">
+          <md-radio class="md-primary" v-model="selectedOption" value="1">
+            This node only
+          </md-radio>
+          <md-radio class="md-primary" v-model="selectedOption" value="2">
+            This node's children nodes
+          </md-radio>
+          <md-radio class="md-primary" v-model="selectedOption" value="3">
+            This node <strong> and </strong> children nodes
+          </md-radio>
+          <md-radio class="md-primary" v-model="selectedOption" value="4">
+            All nodes of similar type in the same context</md-radio
+          >
+
+          <div
+            v-if="
+              selectedOption === '4' ||
+              selectedOption === '3' ||
+              selectedOption === '2'
+            "
+          >
+            <md-field>
+              <label>Filter value : </label>
+              <md-input v-model="strFilter"></md-input>
+            </md-field>
+            <md-radio v-model="strictFilter" :value="true">
+              Strict filter (node name has to match exactly the filter value)
+            </md-radio>
+            <md-radio v-model="strictFilter" :value="false">
+              Not strict filter (node name should contain the filter
+              value)</md-radio
+            >
+          </div>
+
+          <div>
+            <strong> Exclude if : </strong>
+            <md-radio
+              :disabled="selectedOption == '1' || selectedOption == '4'"
+              v-model="excludeOption"
+              value="1"
+            >
+              Node has another parent
+            </md-radio>
+            <md-radio
+              :disabled="selectedOption == '1' || selectedOption == '4'"
+              v-model="excludeOption"
+              value="2"
+            >
+              Node has another parent in the same context
+            </md-radio>
+            <md-radio
+              :disabled="selectedOption == '1' || selectedOption == '4'"
+              v-model="excludeOption"
+              value="3"
+            >
+              Node has another parent in another context
+            </md-radio>
+          </div>
+        </div>
+
+        <div v-if="selectedMode === 'Delete relations'">
+          <md-radio class="md-primary" v-model="selectedOption" value="1">
+            Relation with parent in this context
+          </md-radio>
+          <md-radio class="md-primary" v-model="selectedOption" value="2">
+            Children relations
+          </md-radio>
+          <md-radio
+            disabled
+            class="md-primary"
+            v-model="selectedOption"
+            value="3"
+          >
+            Parent relations (NYI)
+          </md-radio>
+          <md-button v-if="selectedOption == '2'" @click="searchRelations()">
+            Search relations
+          </md-button>
+          <div v-if="searchedRelations.length > 0">
+            <md-checkbox
+              v-for="item in searchedRelations"
+              :key="item"
+              v-model="selectedRelations"
+              :value="item"
+              >{{ item }}</md-checkbox
+            >
+          </div>
+        </div>
       </div>
-    </div>
-
-
-    <div v-if="selectedMode==='Delete relations'">
-      <md-radio class="md-primary" v-model="selectedOption" value="1"> Relation with parent in this context </md-radio>
-      <md-radio class="md-primary" v-model="selectedOption" value="2"> Children relations </md-radio>
-      <md-radio disabled class="md-primary" v-model="selectedOption" value="3"> Parent relations (NYI) </md-radio>
-      <md-button v-if="selectedOption == '2'" @click="searchRelations()"> Search relations </md-button>
-      <div v-if="searchedRelations.length > 0">
-      <md-checkbox v-for="item in searchedRelations" :key="item" v-model="selectedRelations" :value="item">{{item}}</md-checkbox>
-      </div>
-    
-
-
-    </div>
-  </div>
-  <md-dialog-actions>
-    <md-button class="md-primary"
-                @click="closeDialog(false)">Cancel</md-button>
-    <md-button class="md-primary"
-                @click="closeDialog(true)">Accept</md-button>
-  </md-dialog-actions>
-  </md-dialog>
-    
+      <md-dialog-actions>
+        <md-button class="md-primary" @click="closeDialog(false)"
+          >Cancel</md-button
+        >
+        <md-button class="md-primary" @click="closeDialog(true)"
+          >Accept</md-button
+        >
+      </md-dialog-actions>
+    </md-dialog>
   </div>
 </template>
 
 <script>
-import { SpinalGraphService,SPINAL_RELATION_PTR_LST_TYPE, SPINAL_RELATION_LST_PTR_TYPE } from 'spinal-env-viewer-graph-service';
+import {
+  SpinalGraphService,
+  SPINAL_RELATION_PTR_LST_TYPE,
+  SPINAL_RELATION_LST_PTR_TYPE,
+  SpinalNode,
+} from 'spinal-env-viewer-graph-service';
 export default {
-  name: "dialogComponent",
-  props: ["onFinised"],
+  name: 'dialogComponent',
+  props: ['onFinised'],
   data() {
     return {
       showDialog: true,
       selectedNode: null,
       selectedContext: null,
-      selectedMode: "Delete nodes",
-      selectedOption: "1",
+      selectedMode: 'Delete nodes',
+      selectedOption: '1',
       excludeOption: null,
       relationNames: null,
-      modeOptions: ["Delete nodes", "Delete relations"],
+      modeOptions: ['Delete nodes', 'Delete relations'],
       searchedRelations: [],
       selectedRelations: [],
-      strFilter : "",
-      name: ""
+      strictFilter: false,
+      strFilter: '',
+      name: '',
     };
   },
   methods: {
+
     opened(option) {
-      console.log("opened : ",option);
+      console.log('opened : ', option);
       this.name = option.selectedNode.name.get();
       this.selectedNode = option.selectedNode;
       this.selectedContext = option.context;
     },
     removed(option) {
       if (option.closeResult === true) {
-        console.log("closed : ", option);
+        console.log('closed : ', option);
         this.routage();
         this.showDialog = false;
       }
       this.showDialog = false;
     },
 
-    deleteNode(){
+    deleteNode() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       node.removeFromGraph();
     },
 
-    deleteChildren(){
+    deleteChildren() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       node.getChildren().then((children) => {
         this.applyFilter(children).then((filteredChildren) => {
-          const strFilteredChildren = this.applyStrFilter(filteredChildren); 
+          const strFilteredChildren = this.applyStrFilter(filteredChildren);
           console.log(strFilteredChildren);
-          for(const child of strFilteredChildren){
+          for (const child of strFilteredChildren) {
             child.removeFromGraph();
           }
         });
       });
     },
 
-    deleteNodeAndChildren(){
+    deleteNodeAndChildren() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       node.getChildren().then((children) => {
         this.applyFilter(children).then((filteredChildren) => {
-          const strFilteredChildren = this.applyStrFilter(filteredChildren); 
-          for(const child of strFilteredChildren){
+          const strFilteredChildren = this.applyStrFilter(filteredChildren);
+          for (const child of strFilteredChildren) {
             child.removeFromGraph();
           }
         });
@@ -161,76 +219,75 @@ export default {
       node.removeFromGraph();
     },
 
-    deleteAllNodesOfSameTypeInSameContext(){
+    deleteAllNodesOfSameTypeInSameContext() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      SpinalGraphService.findInContextByType(this.selectedContext.id.get(),this.selectedContext.id.get(), node.getType().get()).then((nodes) => {
-        const strFilteredNodes = this.applyStrFilter(nodes); 
-        for(const node of strFilteredNodes){
-          let realNode = SpinalGraphService.getRealNode(node.id.get());
-          realNode.removeFromGraph();
+      SpinalGraphService.findInContextByType(
+        this.selectedContext.id.get(),
+        this.selectedContext.id.get(),
+        node.getType().get()
+      ).then((models) => {
+        const nodes = models.map((m) => SpinalGraphService.getRealNode(m.id.get()));
+        console.log("nodes :",nodes);
+        const strFilteredNodes = this.applyStrFilter(nodes);
+        for (const filteredNode of strFilteredNodes) {
+          //let realNode = SpinalGraphService.getRealNode(node.id.get());
+          filteredNode.removeFromGraph();
         }
       });
     },
 
-    
-
-    deleteRelationWithParentInContext(){
-      console.log("deleteRelationWithParentInContext");
+    deleteRelationWithParentInContext() {
+      console.log('deleteRelationWithParentInContext');
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       // look for parents
       node.getParents().then((parents) => {
-        console.log("parents : ", parents);
-        for(const p of parents){
-        // if parent is in the same context
-        if(p.getContextIds().includes(this.selectedContext.id.get())){
-          console.log("Parent of same context found : ", p.info.name.get())
-          // look for relations
-          for(const r of p.getRelationNames()){
-            // Verify if the node is a child of the parent
-            SpinalGraphService.isChild(p.info.id.get(), this.selectedNode.id.get(), r).then((res) => {
-              if(res){
-                console.log("Attempting to remove" );
-                try{
-                  p.removeChild(node, r,SPINAL_RELATION_PTR_LST_TYPE);
-                  console.log("Removed")
-                }
-                catch(e){
-                  try{
-                    p.removeChild(node, r,SPINAL_RELATION_LST_PTR_TYPE);
-                    console.log("Removed")
-                  } catch(e){
-                    console.log(e);
-                  }
-                }
-              }
-              else console.log("Child not found");
-            });
+        console.log('parents : ', parents);
+        for (const p of parents) {
+          // if parent is in the same context
+          if (p.getContextIds().includes(this.selectedContext.id.get())) {
+            console.log('Parent of same context found : ', p.info.name.get());
+            // look for relations
+            for (const r of p.getRelationNames()) {
+              // Verify if the node is a child of the parent
+              SpinalGraphService.isChild(
+                p.info.id.get(),
+                this.selectedNode.id.get(),
+                r
+              ).then((res) => {
+                if (res) {
+                  console.log('Attempting to remove');
+                  this.removeChild(p, node, r);
+                } else console.log('Child not found');
+              });
+            }
           }
-          
         }
-      }
       });
-      
     },
 
-    deleteChildrenRelations(){
-      console.log("deleteChildrenRelations");
+    async deleteChildrenRelations() {
+      //here we should call removeChild , then if no childs are left we should remove the relation
+      console.log('deleteChildrenRelations');
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      for(const r of this.selectedRelations){
-        try{
-          console.log("Trying to remove relation : ", r);
-          node.removeRelation(r,SPINAL_RELATION_PTR_LST_TYPE);
-        } catch(e){
-          try{
-            node.removeRelation(r,SPINAL_RELATION_LST_PTR_TYPE);
-          } catch(e){
+      for (const r of this.selectedRelations) {
+        const children = await node.getChildren(r);
+        for (const child of children) {
+          this.removeChild(node, child, r);
+        }
+        try {
+          console.log('Trying to remove relation : ', r);
+          node.removeRelation(r, SPINAL_RELATION_PTR_LST_TYPE);
+        } catch (e) {
+          try {
+            node.removeRelation(r, SPINAL_RELATION_LST_PTR_TYPE);
+          } catch (e) {
             console.log(e);
           }
-        }  
+        }
       }
     },
 
-    searchRelations(){
+    searchRelations() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
       let relations = node.getRelationNames();
       this.searchedRelations = relations;
@@ -238,27 +295,31 @@ export default {
       console.log(relations);
     },
 
-    async applyFilter(nodes){
-      switch(this.excludeOption){
-        case "1": // filter out the nodes that have a parent that is not the selected node
+    async applyFilter(nodes) {
+      switch (this.excludeOption) {
+        case '1': // filter out the nodes that have a parent that is not the selected node
           return nodes.filter((node) => {
             node.getParents().then((parents) => {
-              for(const p of parents){
-                if(p.info.id.get() != this.selectedNode.id.get()){
+              for (const p of parents) {
+                if (p.info.id.get() != this.selectedNode.id.get()) {
                   return false;
                 }
               }
               return true;
             });
           });
-        case "2": // filter out the nodes that have another parent in the same context
+        case '2': // filter out the nodes that have another parent in the same context
           return nodes.filter((node) => {
-            node.getParents().then((parents) => { 
-              for(const p of parents){ // for each parent
-                if(p.info.id.get() != this.selectedNode.id.get()){ //if the parent is not the selected node
+            node.getParents().then((parents) => {
+              for (const p of parents) {
+                // for each parent
+                if (p.info.id.get() != this.selectedNode.id.get()) {
+                  //if the parent is not the selected node
                   const parentContextIds = p.getContextIds(); // get the context ids of the parent
-                  for(const c of parentContextIds){ // for each context id of the parent
-                    if(c.includes(this.selectedContext.id.get())){ // if the context id the same as the selected context
+                  for (const c of parentContextIds) {
+                    // for each context id of the parent
+                    if (c.includes(this.selectedContext.id.get())) {
+                      // if the context id the same as the selected context
                       return false;
                     }
                   }
@@ -267,14 +328,18 @@ export default {
               return true;
             });
           });
-        case "3":
+        case '3':
           return nodes.filter((node) => {
-            node.getParents().then((parents) => { 
-              for(const p of parents){ // for each parent
-                if(p.info.id.get() != this.selectedNode.id.get()){ //if the parent is not the selected node
+            node.getParents().then((parents) => {
+              for (const p of parents) {
+                // for each parent
+                if (p.info.id.get() != this.selectedNode.id.get()) {
+                  //if the parent is not the selected node
                   const parentContextIds = p.getContextIds(); // get the context ids of the parent
-                  for(const c of parentContextIds){ // for each context id of the parent
-                    if(!c.includes(this.selectedContext.id.get())){ // if the context id is not the same as the selected context
+                  for (const c of parentContextIds) {
+                    // for each context id of the parent
+                    if (!c.includes(this.selectedContext.id.get())) {
+                      // if the context id is not the same as the selected context
                       return false;
                     }
                   }
@@ -288,75 +353,65 @@ export default {
       }
     },
 
-    applyStrFilter(nodes){
-      if(this.strFilter == "") return nodes;
+
+    applyStrFilter(nodes) { 
+      if (this.strFilter == '') return nodes;
       return nodes.filter((node) => {
-        if(node.info.name.get().includes(this.strFilter)){
-          return true;
-        }
-        else{
-          return false;
-        }
+        if (this.strictFilter) {
+          return node.info.name.get() == this.strFilter;
+        } else return node.info.name.get().includes(this.strFilter);
       });
     },
 
-    
-    routage(){
-      if(this.selectedMode === "Delete nodes"){ 
-        if(this.selectedOption === "1"){
+    routage() {
+      if (this.selectedMode === 'Delete nodes') {
+        if (this.selectedOption === '1') {
           this.deleteNode();
-        }
-        else if(this.selectedOption === "2"){
+        } else if (this.selectedOption === '2') {
           this.deleteChildren();
-        }
-        else if(this.selectedOption === "3"){
+        } else if (this.selectedOption === '3') {
           this.deleteNodeAndChildren();
-        }
-        else if(this.selectedOption === "4"){
+        } else if (this.selectedOption === '4') {
           this.deleteAllNodesOfSameTypeInSameContext();
         }
-      }
-      else if(this.selectedMode === "Delete relations"){
-        if(this.selectedOption === "1"){
+      } else if (this.selectedMode === 'Delete relations') {
+        if (this.selectedOption === '1') {
           this.deleteRelationWithParentInContext();
-        }
-        else if(this.selectedOption === "2"){
+        } else if (this.selectedOption === '2') {
           this.deleteChildrenRelations();
-        }
-        else if(this.selectedOption === "3"){
+        } else if (this.selectedOption === '3') {
           this.deleteParentRelations();
         }
       }
     },
-    
-    removeChild(p,node,r){
-      try{
-        p.removeChild(node, r,SPINAL_RELATION_PTR_LST_TYPE);
-      }
-      catch(e){
-        try{
-          p.removeChild(node, r,SPINAL_RELATION_LST_PTR_TYPE);
-        } catch(e){
+
+    removeChild(p, node, r) {
+      try {
+        p.removeChild(node, r, SPINAL_RELATION_PTR_LST_TYPE);
+      } catch (e) {
+        try {
+          p.removeChild(node, r, SPINAL_RELATION_LST_PTR_TYPE);
+        } catch (e) {
           console.log(e);
         }
       }
     },
 
     closeDialog(closeResult) {
-      if (typeof this.onFinised === "function") {
+      if (typeof this.onFinised === 'function') {
         this.onFinised({ closeResult, inputValue: this.inputValue });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-.DeleteMainBody{
+.DeleteMainBody {
   margin: 20px;
 }
 
-.md-radio{
+.md-radio {
   display: flex;
 }
 </style>
