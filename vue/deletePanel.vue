@@ -57,27 +57,25 @@ with this file. If not, see
             All nodes of similar type in the same context</md-radio
           >
 
-          <div
-            v-if="
-              selectedOption === '4' ||
-              selectedOption === '3' ||
-              selectedOption === '2'
-            "
-          >
+          <div v-if="selectedOption === '4' || selectedOption === '2'">
             <md-field>
               <label>Filter value : </label>
               <md-input v-model="strFilter"></md-input>
             </md-field>
-            <md-radio v-model="strictFilter" :value="true">
-              Strict filter (node name has to match exactly the filter value)
-            </md-radio>
-            <md-radio v-model="strictFilter" :value="false">
-              Not strict filter (node name should contain the filter
-              value)</md-radio
-            >
+            <b v-if="strFilter == ''"> !! If the filter is empty, all nodes will be captured !! </b>
+            <div v-else>
+              <md-radio v-model="strictFilter" :value="true">
+                Strict filter (node name has to match exactly the filter value)
+              </md-radio>
+              <md-radio v-model="strictFilter" :value="false">
+                Not strict filter (node name should contain the filter
+                value)</md-radio
+              >
+            </div>
           </div>
 
           <div>
+            <p>--------------------</p>
             <strong> Exclude if : </strong>
             <md-radio
               :disabled="selectedOption == '1' || selectedOption == '4'"
@@ -110,14 +108,14 @@ with this file. If not, see
           <md-radio class="md-primary" v-model="selectedOption" value="2">
             Children relations
           </md-radio>
-          <md-radio
+          <!-- <md-radio
             disabled
             class="md-primary"
             v-model="selectedOption"
             value="3"
           >
             Parent relations (NYI)
-          </md-radio>
+          </md-radio> -->
           <md-button v-if="selectedOption == '2'" @click="searchRelations()">
             Search relations
           </md-button>
@@ -172,7 +170,6 @@ export default {
     };
   },
   methods: {
-
     opened(option) {
       console.log('opened : ', option);
       this.name = option.selectedNode.name.get();
@@ -198,7 +195,6 @@ export default {
       node.getChildren().then((children) => {
         this.applyFilter(children).then((filteredChildren) => {
           const strFilteredChildren = this.applyStrFilter(filteredChildren);
-          console.log(strFilteredChildren);
           for (const child of strFilteredChildren) {
             child.removeFromGraph();
           }
@@ -226,8 +222,10 @@ export default {
         this.selectedContext.id.get(),
         node.getType().get()
       ).then((models) => {
-        const nodes = models.map((m) => SpinalGraphService.getRealNode(m.id.get()));
-        console.log("nodes :",nodes);
+        const nodes = models.map((m) =>
+          SpinalGraphService.getRealNode(m.id.get())
+        );
+        console.log('nodes :', nodes);
         const strFilteredNodes = this.applyStrFilter(nodes);
         for (const filteredNode of strFilteredNodes) {
           //let realNode = SpinalGraphService.getRealNode(node.id.get());
@@ -296,65 +294,60 @@ export default {
     },
 
     async applyFilter(nodes) {
+      const res = [];
       switch (this.excludeOption) {
         case '1': // filter out the nodes that have a parent that is not the selected node
-          return nodes.filter((node) => {
-            node.getParents().then((parents) => {
-              for (const p of parents) {
-                if (p.info.id.get() != this.selectedNode.id.get()) {
-                  return false;
-                }
+          for (const node of nodes) {
+            const parents = await node.getParents();
+            let filteredOut = false;
+            for (const p of parents) {
+              if (p.info.id.get() != this.selectedNode.id.get()) {
+                filteredOut = true;
+                break;
               }
-              return true;
-            });
-          });
+            }
+            if (!filteredOut) res.push(node);
+          }
+          return res;
+
         case '2': // filter out the nodes that have another parent in the same context
-          return nodes.filter((node) => {
-            node.getParents().then((parents) => {
-              for (const p of parents) {
-                // for each parent
-                if (p.info.id.get() != this.selectedNode.id.get()) {
-                  //if the parent is not the selected node
-                  const parentContextIds = p.getContextIds(); // get the context ids of the parent
-                  for (const c of parentContextIds) {
-                    // for each context id of the parent
-                    if (c.includes(this.selectedContext.id.get())) {
-                      // if the context id the same as the selected context
-                      return false;
-                    }
-                  }
+          for (const node of nodes) {
+            const parents = await node.getParents();
+            let filteredOut = false;
+            for (const p of parents) {
+              if (p.info.id.get() != this.selectedNode.id.get()) {
+                const parentContextIds = p.getContextIds(); // get the context ids of the parent
+                if (parentContextIds.includes(this.selectedContext.id.get())) {
+                  filteredOut = true;
+                  break;
                 }
               }
-              return true;
-            });
-          });
-        case '3':
-          return nodes.filter((node) => {
-            node.getParents().then((parents) => {
-              for (const p of parents) {
-                // for each parent
-                if (p.info.id.get() != this.selectedNode.id.get()) {
-                  //if the parent is not the selected node
-                  const parentContextIds = p.getContextIds(); // get the context ids of the parent
-                  for (const c of parentContextIds) {
-                    // for each context id of the parent
-                    if (!c.includes(this.selectedContext.id.get())) {
-                      // if the context id is not the same as the selected context
-                      return false;
-                    }
-                  }
+            }
+            if (!filteredOut) res.push(node);
+          }
+          return res;
+        case '3': //filter out the nodes that have another parent in another context
+          for (const node of nodes) {
+            const parents = await node.getParents();
+            let filteredOut = false;
+            for (const p of parents) {
+              if (p.info.id.get() != this.selectedNode.id.get()) {
+                const parentContextIds = p.getContextIds(); // get the context ids of the parent
+                if (!parentContextIds.includes(this.selectedContext.id.get())) {
+                  filteredOut = true;
+                  break;
                 }
               }
-              return true;
-            });
-          });
+            }
+            if (!filteredOut) res.push(node);
+          }
+          return res;
         default:
           return nodes;
       }
     },
 
-
-    applyStrFilter(nodes) { 
+    applyStrFilter(nodes) {
       if (this.strFilter == '') return nodes;
       return nodes.filter((node) => {
         if (this.strictFilter) {
