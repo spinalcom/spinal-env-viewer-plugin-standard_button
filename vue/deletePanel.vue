@@ -400,7 +400,23 @@ export default {
 </script>
 
 <style scoped>
+/* Custom scrollbar for WebKit browsers */
+.DeleteMainBody::-webkit-scrollbar {
+  width: 8px; /* width of the entire scrollbar */
+}
+
+.DeleteMainBody::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+.DeleteMainBody::-webkit-scrollbar-thumb {
+  background-color: darkgrey; 
+  border-radius: 10px; 
+  border: 2px solid white; 
+}
+
 .DeleteMainBody {
+  overflow-y: auto; 
   margin: 20px;
 }
 
