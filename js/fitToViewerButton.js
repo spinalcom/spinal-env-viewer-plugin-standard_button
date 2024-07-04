@@ -48,36 +48,18 @@ class SpinalContextFitToViewer extends SpinalContextApp {
     const type = option.selectedNode.type.get();
     if (isShownParam.indexOf(type) > -1)
       return (Promise.resolve(true));
-    return (Promise.resolve(-1))
+    return (Promise.resolve(-1));
   }
 
-  action(option) {
-    this.viewer = window.spinal.ForgeViewer.viewer
-    let self = this;
-    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
-      .get());
-    this.viewer = window.spinal.ForgeViewer.viewer
-
-    realNode.find(SELECTrelationList,
-      function(node) {
-        if (node.info.type.get() === "BIMObject") return true;
-      }).then(lst => {
-      utilities.sortBIMObjectByModel(lst).then(lstByModel => {
-        let arrayToFit = []
-        for (let i = 0; i < lstByModel.length; i++) {
-          const element = lstByModel[i];
-          let obj = {
-            model: element.model.modelScene[0].model,
-            selection: element.dbid
-          }
-          arrayToFit.push(obj);
-          obj.model.selector.setSelection(element.dbid, obj
-            .model,
-            "selectOnly")
-        }
-        self.viewer.fitToView(arrayToFit);
-      })
-    });
+  async action(option) {
+    this.viewer = window.spinal.ForgeViewer.viewer;
+    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
+    this.viewer = window.spinal.ForgeViewer.viewer;
+    const nodes = await realNode.find(SELECTrelationList,
+      (node) => node.info.type.get() === "BIMObject");
+    const lstByModel = await utilities.sortBIMObjectByModel(nodes);
+    const arrayToFit = utilities.organizeBimObjectForAggregateViewer(lstByModel, 'selection');
+    this.viewer.fitToView(arrayToFit);
   }
 }
 

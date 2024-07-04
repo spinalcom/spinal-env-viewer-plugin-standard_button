@@ -141,7 +141,7 @@ const utilities = {
       try {
         let spinalModel =
           window.spinal.BimObjectService.mappingBimFileIdModelId[
-            bim.bimFileId.get()
+          bim.bimFileId.get()
           ];
         if (spinalModel) {
           for (let j = 0; j < arrayModel.length; j++) {
@@ -157,6 +157,30 @@ const utilities = {
     }
     return arrayModel;
   },
+  organizeBimObjectForAggregateViewer(bimObjects, name_of_key) {
+    const aggregate = bimObjects.reduce((res, el) => {
+      let m = window.spinal.BimObjectService
+        .mappingBimFileIdModelId[el.bimFileId];
+      for (const { model } of m.modelScene) {
+        let found = false;
+        for (const item of res) {
+          if (item.model === model) {
+            item[name_of_key].push(...el.selection);
+            found = true;
+          }
+        }
+        if (!found) {
+          res.push({
+            model,
+            [name_of_key]: Array.from(el.selection)
+          });
+        }
+      }
+      return res;
+    }, []);
+    return aggregate;
+  },
+
 };
 
 module.exports = {

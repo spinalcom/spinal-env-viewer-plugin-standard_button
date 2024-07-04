@@ -1,27 +1,5 @@
 {
-  "_from": "git+https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-  "_id": "spinal-env-viewer-plugin-standard_button@1.0.3",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/spinal-env-viewer-plugin-standard_button",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-    "rawSpec": "https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-    "saveSpec": "git+https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-    "fetchSpec": "https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-    "gitCommittish": null
-  },
-  "_requiredBy": [
-    "#USER",
-    "/",
-    "/spinal-env-viewer-plugin-note-standard-buttons-service",
-    "/spinal-env-viewer-plugin-ticket"
-  ],
-  "_resolved": "git+https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git#0ef794e91913a3e0e98838cc03db70ed411bcdc6",
-  "_spec": "https://github.com/spinalcom/spinal-env-viewer-plugin-standard_button.git",
-  "_where": "/home/ubuntu/spinalcom/spinal-viewer_Hager_8010",
+  "version": "1.0.4",
   "author": "",
   "browserify": {
     "transform": [
@@ -43,6 +21,5 @@
   "name": "spinal-env-viewer-plugin-standard_button",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "version": "1.0.3"
+  }
 }

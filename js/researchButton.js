@@ -48,7 +48,6 @@ class SpinalContexResearch extends SpinalContextApp {
   }
 }
 
-
 export {
   SpinalContexResearch
 };

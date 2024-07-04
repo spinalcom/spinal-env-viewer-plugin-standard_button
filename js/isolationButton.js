@@ -48,59 +48,31 @@ class SpinalContextIsolation extends SpinalContextApp {
     const type = option.selectedNode.type.get();
     if (isShownParam.indexOf(type) > -1)
       return (Promise.resolve(true));
-    return (Promise.resolve(-1))
+    return (Promise.resolve(-1));
   }
 
-  action(option) {
-    this.viewer = window.spinal.ForgeViewer.viewer
-    let self = this;
-    let boolSameNode = false
-    let modelResetIsolate = []
-    let aggregateIsolation = []
-    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id
-      .get());
+  async action(option) {
+    this.viewer = window.spinal.ForgeViewer.viewer;
+    let boolSameNode = false;
+    let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
     if (this.lastNode == undefined) {
-      this.lastNode = realNode
+      this.lastNode = realNode;
     } else {
-      aggregateIsolation = this.viewer.getAggregateIsolation()
-      if (this.lastNode.info.id.get() == realNode.info.id.get() &&
-        aggregateIsolation.length) {
-        boolSameNode = true
+      if (this.lastNode.info.id.get() == realNode.info.id.get()) {
+        boolSameNode = true;
+        this.lastNode = null;
       } else {
-        this.lastNode = realNode
+        this.lastNode = realNode;
       }
     }
     if (boolSameNode) {
-      for (let i = 0; i < aggregateIsolation.length; i++) {
-        const element = aggregateIsolation[i];
-        self.viewer.isolate(0, element.model)
-      }
+      this.viewer.impl.visibilityManager.aggregateIsolate();
     } else {
-      this.viewer = window.spinal.ForgeViewer.viewer
-      realNode.find(SELECTrelationList,
-        function (node) {
-          if (node.info.type.get() === "BIMObject") return true;
-        }).then(lst => {
-          utilities.sortBIMObjectByModel(lst).then(lstByModel => {
-            for (let i = 0; i < lstByModel.length; i++) {
-              const element = lstByModel[i];
-              for (let j = 0; j < element.model.modelScene
-                .length; j++) {
-                const scene = element.model.modelScene[j];
-                if (element.dbid.length != 0) {
-                  self.viewer.isolate(element.dbid, scene.model)
-                } else {
-                  let rootId = scene.model.getRootId()
-                  scene.model.getObjectTree((tree) => {
-                    let dbidRoot = tree.nodeAccess.dbIdToIndex[
-                      rootId]
-                    self.viewer.isolate([dbidRoot], scene.model)
-                  })
-                }
-              }
-            }
-          })
-        });
+      const nodes = await realNode.find(SELECTrelationList,
+        (node) => node.info.type.get() === "BIMObject");
+      const lstByModel = await utilities.sortBIMObjectByModel(nodes);
+      const arrRes = utilities.organizeBimObjectForAggregateViewer(lstByModel, 'ids');
+      this.viewer.impl.visibilityManager.aggregateIsolate(arrRes);
     }
   }
 }
