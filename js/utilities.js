@@ -159,13 +159,11 @@ const utilities = {
   },
   organizeBimObjectForAggregateViewer(bimObjects, name_of_key) {
     const aggregate = bimObjects.reduce((res, el) => {
-      let m = window.spinal.BimObjectService
-        .mappingBimFileIdModelId[el.bimFileId];
-      for (const { model } of m.modelScene) {
+      for (const { model } of el.model.modelScene) {
         let found = false;
         for (const item of res) {
           if (item.model === model) {
-            item[name_of_key].push(...el.selection);
+            item[name_of_key].push(...el.dbid);
             found = true;
           }
         }

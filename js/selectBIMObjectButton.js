@@ -50,7 +50,6 @@ class SpinalContextSelectBIMObject extends SpinalContextApp {
   async action(option) {
     this.viewer = window.spinal.ForgeViewer.viewer;
     let realNode = SpinalGraphService.getRealNode(option.selectedNode.id.get());
-    this.viewer = window.spinal.ForgeViewer.viewer;
     const nodes = await realNode.find(SELECTrelationList,
       (node) => node.info.type.get() === "BIMObject");
     const lstByModel = await utilities.sortBIMObjectByModel(nodes);
