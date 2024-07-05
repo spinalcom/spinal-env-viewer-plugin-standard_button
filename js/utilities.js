@@ -170,7 +170,7 @@ const utilities = {
         if (!found) {
           res.push({
             model,
-            [name_of_key]: Array.from(el.selection)
+            [name_of_key]: Array.from(el.dbid)
           });
         }
       }
