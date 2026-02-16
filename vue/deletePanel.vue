@@ -45,7 +45,7 @@ with this file. If not, see
         </md-field>
         <div v-if="selectedMode === 'Delete nodes'">
           <md-radio class="md-primary" v-model="selectedOption" value="1">
-            This node only
+            This node only (remove from graph)
           </md-radio>
           <md-radio class="md-primary" v-model="selectedOption" value="2">
             This node's children nodes
