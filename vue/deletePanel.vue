@@ -25,20 +25,14 @@ with this file. If not, see
 <template>
   <div>
     <md-dialog :md-active.sync="showDialog" @md-closed="closeDialog(false)">
-      <md-dialog-title
-        >Delete action on node selected : {{ name }}</md-dialog-title
-      >
+      <md-dialog-title>Delete action on node selected : {{ name }}</md-dialog-title>
       <div class="DeleteMainBody">
         <md-field>
           <label for="Select how you want the delete to operate">
             Select how you want the delete to operate
           </label>
           <md-select id="modeSelect" name="modeSelect" v-model="selectedMode">
-            <md-option
-              v-for="option in modeOptions"
-              :key="option"
-              :value="option"
-            >
+            <md-option v-for="option in modeOptions" :key="option" :value="option">
               {{ option }}
             </md-option>
           </md-select>
@@ -54,8 +48,7 @@ with this file. If not, see
             This node <strong> and </strong> children nodes
           </md-radio>
           <md-radio class="md-primary" v-model="selectedOption" value="4">
-            All nodes of similar type in the same context</md-radio
-          >
+            All nodes of similar type in the same context</md-radio>
 
           <div v-if="selectedOption === '4' || selectedOption === '2'">
             <md-field>
@@ -69,33 +62,20 @@ with this file. If not, see
               </md-radio>
               <md-radio v-model="strictFilter" :value="false">
                 Not strict filter (node name should contain the filter
-                value)</md-radio
-              >
+                value)</md-radio>
             </div>
           </div>
 
           <div>
             <p>--------------------</p>
             <strong> Exclude if : </strong>
-            <md-radio
-              :disabled="selectedOption == '1' || selectedOption == '4'"
-              v-model="excludeOption"
-              value="1"
-            >
+            <md-radio :disabled="selectedOption == '1' || selectedOption == '4'" v-model="excludeOption" value="1">
               Node has another parent
             </md-radio>
-            <md-radio
-              :disabled="selectedOption == '1' || selectedOption == '4'"
-              v-model="excludeOption"
-              value="2"
-            >
+            <md-radio :disabled="selectedOption == '1' || selectedOption == '4'" v-model="excludeOption" value="2">
               Node has another parent in the same context
             </md-radio>
-            <md-radio
-              :disabled="selectedOption == '1' || selectedOption == '4'"
-              v-model="excludeOption"
-              value="3"
-            >
+            <md-radio :disabled="selectedOption == '1' || selectedOption == '4'" v-model="excludeOption" value="3">
               Node has another parent in another context
             </md-radio>
           </div>
@@ -120,35 +100,23 @@ with this file. If not, see
             Search relations
           </md-button>
           <div v-if="searchedRelations.length > 0">
-            <md-checkbox
-              v-for="item in searchedRelations"
-              :key="item"
-              v-model="selectedRelations"
-              :value="item"
-              >{{ item }}</md-checkbox
-            >
+            <md-checkbox v-for="item in searchedRelations" :key="item" v-model="selectedRelations" :value="item">{{ item
+              }}</md-checkbox>
           </div>
         </div>
       </div>
       <md-dialog-actions>
-        <md-button class="md-primary" @click="closeDialog(false)"
-          >Cancel</md-button
-        >
-        <md-button class="md-primary" @click="closeDialog(true)"
-          >Accept</md-button
-        >
+        <md-button class="md-primary" @click="closeDialog(false)">Cancel</md-button>
+        <md-button class="md-primary" @click="closeDialog(true)">Accept</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
 </template>
 
 <script>
-import {
-  SpinalGraphService,
-  SPINAL_RELATION_PTR_LST_TYPE,
-  SPINAL_RELATION_LST_PTR_TYPE,
-  SpinalNode,
-} from 'spinal-env-viewer-graph-service';
+import { SpinalGraphService, SPINAL_RELATION_PTR_LST_TYPE, SPINAL_RELATION_LST_PTR_TYPE, SpinalNode } from 'spinal-env-viewer-graph-service';
+import { SpinalBmsDevice } from 'spinal-model-bmsnetwork';
+
 export default {
   name: 'dialogComponent',
   props: ['onFinised'],
@@ -176,6 +144,7 @@ export default {
       this.selectedNode = option.selectedNode;
       this.selectedContext = option.context;
     },
+
     removed(option) {
       if (option.closeResult === true) {
         console.log('closed : ', option);
@@ -185,58 +154,73 @@ export default {
       this.showDialog = false;
     },
 
-    deleteNode() {
-      let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      node.removeFromGraph();
+    deleteNode(node) {
+      node = node || SpinalGraphService.getRealNode(this.selectedNode.id.get());
+      return node.removeFromGraph().then(async (result) => {
+        if (node.getType().get() === SpinalBmsDevice.nodeTypeName) await this.clearBmsDevice(node);
+
+      })
     },
 
     deleteChildren() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
+
       node.getChildren().then((children) => {
         this.applyFilter(children).then((filteredChildren) => {
+          const promises = [];
           const strFilteredChildren = this.applyStrFilter(filteredChildren);
           for (const child of strFilteredChildren) {
-            child.removeFromGraph();
+            promises.push(this.deleteNode(child));
           }
+
+          return Promise.all(promises);
         });
       });
     },
 
     deleteNodeAndChildren() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
+      const promises = [];
       node.getChildren().then((children) => {
         this.applyFilter(children).then((filteredChildren) => {
           const strFilteredChildren = this.applyStrFilter(filteredChildren);
           for (const child of strFilteredChildren) {
-            child.removeFromGraph();
+            promises.push(this.deleteNode(child));
           }
         });
       });
-      node.removeFromGraph();
+
+      return Promise.all(promises).then(() => {
+        return this.deleteNode(node);
+      });
     },
+
+
 
     deleteAllNodesOfSameTypeInSameContext() {
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
-      SpinalGraphService.findInContextByType(
-        this.selectedContext.id.get(),
-        this.selectedContext.id.get(),
-        node.getType().get()
-      ).then((models) => {
-        const nodes = models.map((m) =>
-          SpinalGraphService.getRealNode(m.id.get())
-        );
-        console.log('nodes :', nodes);
-        const strFilteredNodes = this.applyStrFilter(nodes);
-        for (const filteredNode of strFilteredNodes) {
-          //let realNode = SpinalGraphService.getRealNode(node.id.get());
-          filteredNode.removeFromGraph();
-        }
-      });
+      return SpinalGraphService.findInContextByType(this.selectedContext.id.get(), this.selectedContext.id.get(), node.getType().get())
+        .then((models) => {
+          const promises = [];
+          const nodes = models.map((m) => SpinalGraphService.getRealNode(m.id.get()));
+          console.log('nodes :', nodes);
+
+          const strFilteredNodes = this.applyStrFilter(nodes);
+
+          for (const filteredNode of strFilteredNodes) {
+            //let realNode = SpinalGraphService.getRealNode(node.id.get());
+            promises.push(this.deleteNode(filteredNode)
+            );
+          }
+
+          return Promise.all(promises);
+        });
     },
 
     deleteRelationWithParentInContext() {
       console.log('deleteRelationWithParentInContext');
       let node = SpinalGraphService.getRealNode(this.selectedNode.id.get());
+
       // look for parents
       node.getParents().then((parents) => {
         console.log('parents : ', parents);
@@ -395,6 +379,18 @@ export default {
         this.onFinised({ closeResult, inputValue: this.inputValue });
       }
     },
+
+    async clearBmsDevice(node) {
+      if (node.getType().get() !== SpinalBmsDevice.nodeTypeName) return;
+      if (!node.info || !node.info.listener) return;
+
+      const listenerModel = node.info.listener.load && (await node.info.listener.load());
+
+      if (listenerModel && typeof listenerModel.removeFromGraph === "function") {
+        await listenerModel.removeFromGraph();
+      }
+
+    }
   },
 };
 </script>
@@ -402,21 +398,22 @@ export default {
 <style scoped>
 /* Custom scrollbar for WebKit browsers */
 .DeleteMainBody::-webkit-scrollbar {
-  width: 8px; /* width of the entire scrollbar */
+  width: 8px;
+  /* width of the entire scrollbar */
 }
 
 .DeleteMainBody::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
 
 .DeleteMainBody::-webkit-scrollbar-thumb {
-  background-color: darkgrey; 
-  border-radius: 10px; 
-  border: 2px solid white; 
+  background-color: darkgrey;
+  border-radius: 10px;
+  border: 2px solid white;
 }
 
 .DeleteMainBody {
-  overflow-y: auto; 
+  overflow-y: auto;
   margin: 20px;
 }
 
